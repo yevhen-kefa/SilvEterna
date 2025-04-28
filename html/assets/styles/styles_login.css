@@ -28,9 +28,9 @@ body {
 .login-form {
     flex: 1;
     background-color: #e0f7fa;
-    padding: 20px;
+    padding: 40px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     margin-left: 20px;
 }
@@ -51,6 +51,7 @@ body {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
+    
     border: 1px solid #ccc;
     border-radius: 5px;
 }
