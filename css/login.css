@@ -27,8 +27,6 @@ body {
 
 .login-form {
     flex: 1;
-    background-color: #e0f7fa;
-    padding: 40px;
     background-color: #E5FCF5;
     padding: 20px;
     border-radius: 10px;
@@ -65,7 +63,6 @@ body {
 .login-form button {
     width: 100%;
     padding: 10px;
-    background-color: #a4d4b8;
     background-color: #9de7b6;
     color: white;
     border: none;
@@ -76,7 +73,6 @@ body {
 }
 
 .login-form button:hover {
-    background-color: #0c9b48;
     background-color: #86E3A4;
 }
 
