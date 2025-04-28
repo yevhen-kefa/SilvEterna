@@ -1,34 +1,26 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #e0f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e6f7ef;
 }
 
 .container {
     display: flex;
-    width: 80%;
-    max-width: 1200px;
-    background-color: #e0f7fa;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 100vh;
 }
 
 .sidebar {
     width: 200px;
-    background-color: #a5d6a7;
+    background-color: #c7e5d6;
     padding: 20px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+    box-sizing: border-box;
 }
 
-.sidebar h1 {
-    color: #8e24aa;
-    text-align: center;
-    margin-bottom: 20px;
+.logo {
+    font-family: 'Cursive', sans-serif;
+    font-size: 24px;
+    color: #b52b2b;
+    margin-bottom: 40px;
 }
 
 .sidebar ul {
@@ -36,111 +28,118 @@ body {
     padding: 0;
 }
 
-.sidebar ul li {
-    margin-bottom: 10px;
-}
-
-.sidebar ul li a {
-    color: #333;
-    text-decoration: none;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.sidebar ul li a:hover {
-    background-color: #8e24aa;
-    color: white;
-}
-
-.main-content {
-    flex: 1;
-    padding: 20px;
-}
-
-.profile {
-    text-align: center;
+.sidebar li {
     margin-bottom: 20px;
 }
 
-.profile img {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
+.sidebar a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.profile {
+    flex-grow: 1;
+    background-color: #ffffff;
+    margin: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-header {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+.header-img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    margin-bottom: 10px;
 }
 
-.profile h2 {
-    color: #8e24aa;
-    margin-bottom: 5px;
+.avatar-container {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.profile p {
-    color: #333;
-    margin: 5px 0;
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: cover;
+}
+
+.profile-info {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.profile-info h2 {
+    margin: 10px 0;
 }
 
 .friends {
-    background-color: #e0f7fa;
+    width: 250px;
+    background-color: #d5f1e5;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .friends h3 {
-    color: #8e24aa;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .friends ul {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
-
-.friends ul li {
+.friends li {
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
+    justify-content: space-between;
+    margin-bottom: 15px;
 }
 
-.friends ul li img {
-    width: 50px;
-    height: 50px;
+.friends li > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.friends img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
 }
 
-.friends ul li p {
-    margin: 0;
-    flex: 1;
+.friends span {
+    font-weight: bold;
 }
 
-.friends ul li button {
-    background-color: #8e24aa;
-    color: white;
+.friends button {
+    background-color: #b2e0c4;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
+    white-space: nowrap;
 }
 
-.friends ul li button:hover {
-    background-color: #7b1fa2;
-}
-
-.chat-button {
-    width: 100%;
-    background-color: #8e24aa;
-    color: white;
-    border: none;
+.chat-box {
+    margin-top: auto;
+    background-color: #b2e0c4;
     padding: 10px;
+    text-align: center;
     border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.chat-button:hover {
-    background-color: #7b1fa2;
+    font-weight: bold;
 }
