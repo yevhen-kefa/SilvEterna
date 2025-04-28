@@ -29,6 +29,8 @@ body {
     flex: 1;
     background-color: #e0f7fa;
     padding: 40px;
+    background-color: #E5FCF5;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
     max-width: 400px;
@@ -64,14 +66,18 @@ body {
     width: 100%;
     padding: 10px;
     background-color: #a4d4b8;
+    background-color: #9de7b6;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    border: 1px solid #000;
+    margin-top: 10px;
 }
 
 .login-form button:hover {
     background-color: #0c9b48;
+    background-color: #86E3A4;
 }
 
 .login-form p {
@@ -80,6 +86,7 @@ body {
 }
 
 .login-form a {
+    color: #000;
     text-decoration: none;
 }
 
