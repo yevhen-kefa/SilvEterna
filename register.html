@@ -3,158 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SilvEterna - Inscription</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f0f8f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: row;
-            max-width: 1000px;
-            width: 100%;
-            background-color: #f0f8f5;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .image-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .image-container img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .form-container {
-            flex: 0.6; /* Réduit la taille relative du formulaire */
-            background-color: #f0f8f5;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            max-width: 550px; /* Limite la largeur maximale */
-            width: 100%;
-            align-self: center;
-        }
-
-        .title {
-            text-align: center;
-            color: #8b3a62;
-            font-size: 32px;
-            margin-bottom: 30px;
-            font-weight: bold;
-            text-shadow: 1px 1px 1px #d8a9b8;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #a4d4b4;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #8bc29e;
-        }
-
-        /* Responsivité */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .image-container {
-                order: 1;
-            }
-
-            .form-container {
-                order: 2;
-                margin: 10px;
-            }
-        }
-    </style>
+    <title>SilvEterna</title>
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-
-        <div class="image-container">
-            <img src="img/log_img.svg" alt="Groupe de personnes âgées" />
+    <div class="container">
+        <div class="illustration">
+            <img src="img/log_img.svg" alt="Illustration de personnes âgées">
         </div>
-        <div class="form-container">
-            <h1 class="title">SilvEterna</h1>
-            
-            <div class="form-group">
-                <label for="nom">Nom :</label>
+        <div class="login-form">
+            <h1>SilvEterna</h1>
+            <form>
+                <label for="nom">Nom:</label>
                 <input type="text" id="nom" placeholder="Nom" />
-            </div>
-            
-            <div class="form-group">
-                <label for="prenom">Prénom :</label>
+                <label for="prenom">Prenom:</label>
                 <input type="text" id="prenom" placeholder="Prenom" />
-            </div>
-            
-            <div class="form-group">
                 <label for="date-naissance">Date de naissance :</label>
                 <input type="text" id="date-naissance" placeholder="JJ/MM/AAAA" />
-            </div>
-            
-            <div class="form-group">
                 <label for="telephone">Téléphone :</label>
                 <input type="tel" id="telephone" placeholder="+33600047079" />
-            </div>
-            
-            <div class="form-group">
                 <label for="courriel">Courriel :</label>
                 <input type="email" id="courriel" placeholder="mail@gmail.com" />
-            </div>
-            
-            <button type="submit">Inscription</button>
-        </div>
 
+                <button type="submit">Inscription</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
