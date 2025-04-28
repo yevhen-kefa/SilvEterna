@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier - SilvEterna</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background-color: #a8e6cf;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h1 {
+            color: #d9138f;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .main-content h2 {
+            color: #d9138f;
+            text-align: center;
+        }
+
+        .calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid div {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .calendar-grid div.selected {
+            background-color: #a8e6cf;
+        }
+
+        .event-popup {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .event-popup h3 {
+            margin-top: 0;
+        }
+
+        .event-popup label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .event-popup input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h1>SilvEterna</h1>
+        <ul>
+            <li><a href="#">Calendrier</a></li>
+            <li><a href="#">Option</a></li>
+            <li><a href="#">Jeux</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <h2>Février</h2>
+        <div class="calendar">
+            <div class="calendar-grid">
+                <div>Di</div>
+                <div>Lu</div>
+                <div>Ma</div>
+                <div>Me</div>
+                <div>Je</div>
+                <div>Ve</div>
+                <div>Sa</div>
+                <div>29</div>
+                <div>30</div>
+                <div>31</div>
+                <div>1</div>
+                <div>2</div>
+                <div>3</div>
+                <div>4</div>
+                <div>5</div>
+                <div>6</div>
+                <div>7</div>
+                <div>8</div>
+                <div>9</div>
+                <div>10</div>
+                <div>11</div>
+                <div>12</div>
+                <div>13</div>
+                <div class="selected">14</div>
+                <div>15</div>
+                <div>16</div>
+                <div>17</div>
+                <div>18</div>
+                <div>19</div>
+                <div>20</div>
+                <div>21</div>
+                <div>22</div>
+                <div>23</div>
+                <div>24</div>
+                <div>25</div>
+                <div>26</div>
+                <div>27</div>
+                <div>28</div>
+            </div>
+        </div>
+        <div class="event-popup" id="event-popup">
+            <h3>Calendrier</h3>
+            <label for="event-title">Titre:</label>
+            <input type="text" id="event-title" name="event-title">
+            <label for="event-date">Date: </label>
+            <input type="date" id="event-date" name="event-date">
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.calendar-grid div').forEach(day => {
+            day.addEventListener('click', function() {
+                document.getElementById('event-popup').style.display = 'block';
+                document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+            });
+        });
+
+        // Close the popup if the user clicks outside of it
+        window.onclick = function(event) {
+            var popup = document.getElementById('event-popup');
+            if (event.target == popup) {
+                popup.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
