@@ -96,57 +96,103 @@
         }
 
         .calendar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* prend toute la largeur disponible */
+}
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-        }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    width: 80%; /* élargir le calendrier */
+    max-width: 800px; /* limite large */
+}
 
-        .calendar-grid div {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
-            cursor: pointer;
-        }
+.calendar-grid hover {
+    background-color: aquamarine;
+
+}
+
+.calendar-grid div {
+    padding: 20px; /* agrandit chaque case */
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+    user-select: none; /* empêche la sélection du texte */
+    font-size: 1.2em; /* texte plus gros */
+}
+
 
         .calendar-grid div.selected {
             background-color: #a8e6cf;
         }
 
         .event-popup {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    min-width: 300px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
 
-        .event-popup h3 {
-            margin-top: 0;
-        }
+.event-popup h3 {
+    margin-top: 0;
+    color: #d9138f;
+    text-align: center;
+}
 
-        .event-popup label {
-            display: block;
-            margin-top: 10px;
-        }
+.event-popup label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
 
-        .event-popup input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+.event-popup input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+}
+
+.event-popup .close-btn {
+    background-color: #d9138f;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+    font-size: 1em;
+}
+
+
+    .calendar-grid div.selected {
+    background-color: #ffb3c6;
+    color: white;
+    border: 2px solid #d9138f;
+}
+
+.day-header {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #d9138f;
+    cursor: default;
+}
+
+
     </style>
 </head>
 <body>
@@ -161,14 +207,15 @@
     <div class="main-content">
         <h2>Février</h2>
         <div class="calendar">
-            <div class="calendar-grid">
-                <div>Di</div>
-                <div>Lu</div>
-                <div>Ma</div>
-                <div>Me</div>
-                <div>Je</div>
-                <div>Ve</div>
-                <div>Sa</div>
+                    <div class="calendar-grid">
+                        <div class="day-header">Di</div>
+                        <div class="day-header">Lu</div>
+                        <div class="day-header">Ma</div>
+                        <div class="day-header">Me</div>
+                        <div class="day-header">Je</div>
+                        <div class="day-header">Ve</div>
+                        <div class="day-header">Sa</div>
+                
                 <div>29</div>
                 <div>30</div>
                 <div>31</div>
@@ -185,7 +232,7 @@
                 <div>11</div>
                 <div>12</div>
                 <div>13</div>
-                <div class="selected">14</div>
+                <div>14</div>
                 <div>15</div>
                 <div>16</div>
                 <div>17</div>
@@ -201,14 +248,20 @@
                 <div>27</div>
                 <div>28</div>
             </div>
-        </div>
-        <div class="event-popup" id="event-popup">
-            <h3>Calendrier</h3>
-            <label for="event-title">Titre:</label>
-            <input type="text" id="event-title" name="event-title">
-            <label for="event-date">Date: </label>
-            <input type="date" id="event-date" name="event-date">
-        </div>
+            <div class="event-popup" id="event-popup">
+                <h3>Nouvel Événement</h3>
+            
+                <label for="event-title">Titre :</label>
+                <input type="text" id="event-title" name="event-title">
+                
+                <label for="event-date">Date :</label>
+                <input type="date" id="event-date" name="event-date">
+            
+                <button class="close-btn" onclick="submitEvent()">Envoyer</button>
+                <button class="close-btn" onclick="closePopup()">Fermer</button>
+            </div>
+            
+        
     </div>
 
     <script>
@@ -226,6 +279,43 @@
                 popup.style.display = 'none';
             }
         }
+
+        function closePopup() {
+    document.getElementById('event-popup').style.display = 'none';
+}
+
+
+    function closePopup() {
+        document.getElementById('event-popup').style.display = 'none';
+    }
+
+    function submitEvent() {
+        const title = document.getElementById('event-title').value;
+        const date = document.getElementById('event-date').value;
+
+        if (!title || !date) {
+            alert("Veuillez remplir tous les champs.");
+            return;
+        }
+
+        alert(`Événement "${title}" enregistré pour le ${date}`);
+        closePopup(); // Ferme après soumission
+    }
+
+    // Affiche la popup quand on clique sur un jour
+    document.querySelectorAll('.calendar-grid div').forEach(day => {
+        const isDayNumber = !day.style.backgroundColor; // éviter les en-têtes
+        if (isDayNumber) {
+            day.addEventListener('click', function() {
+                document.getElementById('event-popup').style.display = 'block';
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('event-date').value = today;
+            });
+        }
+    });
+
+
+        
     </script>
 </body>
 </html>
