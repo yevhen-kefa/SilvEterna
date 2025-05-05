@@ -45,7 +45,7 @@ CREATE TABLE `agenda` (
 INSERT INTO `agenda` (`id_agenda`, `titre`, `description`, `date`, `heure_debut`, `heure_fin`, `lieu`, `type_evenement`) VALUES
 (1, 'Réunion', 'Réunion de projet', '2023-10-03', '09:00:00', '10:00:00', 'Salle de réunion', 'Professionnel'),
 (2, 'Anniversaire', 'Anniversaire de Marie', '2023-10-04', '19:00:00', '22:00:00', 'Maison de Marie', 'Personnel'),
-(3, 'Conférence', 'Conférence sur l\'IA', '2023-10-05', '14:00:00', '16:00:00', 'Centre de conférence', 'Professionnel'),
+(3, 'Conférence', 'Conférence sur IA', '2023-10-05', '14:00:00', '16:00:00', 'Centre de conférence', 'Professionnel'),
 (4, 'Voyage', 'Voyage à Paris', '2023-10-06', '08:00:00', '18:00:00', 'Paris', 'Personnel');
 
 -- --------------------------------------------------------
