@@ -1,3 +1,28 @@
+<?php
+session_start();
+require_once "../connexion.inc.php";
+
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+// Chargement des données de l'utilisateur
+$stmt = $cnx->prepare("SELECT * FROM users WHERE id = :id");
+$stmt->execute(['id' => $_SESSION['user_id']]);
+$user = $stmt->fetch();
+
+// Calcul de l'âge
+$birthDate = new DateTime($user['dateNaissance']);
+$today = new DateTime();
+$age = $today->diff($birthDate)->y;
+
+// Format de la date d'enregistrement
+$dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
+?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -27,10 +52,10 @@
                 </div>
             </div>
             <div class="profile-info">
-                <h2>Kasane Teto</h2>
-                <p><strong>Age:</strong> 31 ans</p>
-                <p><strong>Loisirs :</strong> Chant</p>
-                <p><strong>Membre depuis:</strong> 07/04/2025</p>
+                <h2><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h2>
+                <p><strong>Age:</strong> <?= $age ?> ans</p>
+                <p><strong>Email:</strong> <?= htmlspecialchars($user['email']) ?></p>
+                <p><strong>Membre depuis:</strong> <?= $dateCreated ?></p>
             </div>
         </main>
 
