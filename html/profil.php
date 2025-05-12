@@ -41,6 +41,7 @@ $dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
                     <li><a href="calendar.html">Calendrier</a></li>
                     <li><a href="jeux.html">Jeux</a></li>
                     <li><a href="option.html">Option</a></li>
+                    <li><a href="../deconnexion.php">Deconnexion</a></li>
                 </ul>
             </nav>
         </aside>
