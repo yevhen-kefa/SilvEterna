@@ -5,49 +5,53 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = $_POST['nom'] ?? '';
-    $prenom = $_POST['prenom'] ?? '';
-    $dateNaissance = $_POST['date_naissance'] ?? '';
-    $telephone = $_POST['telephone'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $dateInput = trim($_POST['date_naissance'] ?? '');
+    $telephone = trim($_POST['telephone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['pass'] ?? '';
 
-    // Hachage du mot de passe
-    $hashedPass = password_hash($password, PASSWORD_DEFAULT);
-
-    $cnx->exec("SELECT setval('users_id_seq', (SELECT MAX(id) FROM users))");
-
-    // Vérifier si l'utilisateur avec cet email existe déjà
-    $stmt = $cnx->prepare("SELECT id FROM users WHERE email = :email");
-    $stmt->execute(['email' => $email]);
-
-    if ($stmt->fetch()) {
-        $message = "Un utilisateur avec cet email existe déjà.";
+    $dateObj = DateTime::createFromFormat('d/m/Y', $dateInput);
+    if (!$dateObj) {
+        $message = "Format de date invalide. Utilisez JJ/MM/AAAA.";
     } else {
-        $stmt = $cnx->prepare("
-            INSERT INTO users (nom, prenom, dateNaissance, telephone, email, pass, date_create)
-            VALUES (:nom, :prenom, :dateNaissance, :telephone, :email, :pass, NOW())
-        ");
+        $dateNaissance = $dateObj->format('Y-m-d');
 
-        $stmt->execute([
-            'nom' => $nom,
-            'prenom' => $prenom,
-            'dateNaissance' => date('Y-m-d', strtotime($dateNaissance)),
-            'telephone' => $telephone,
-            'email' => $email,
-            'pass' => $hashedPass
-        ]);
+        $stmt = $cnx->prepare("SELECT id FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
 
-        // Après une inscription réussie - redirection vers login.php
-        header("Location: login.php");
-        exit;
+        if ($stmt->fetch()) {
+            $message = "Un utilisateur avec cet email existe déjà.";
+        } else {
+            $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+
+            $cnx->exec("SELECT setval('users_id_seq', (SELECT MAX(id) FROM users))");
+
+            $stmt = $cnx->prepare("
+                INSERT INTO users (nom, prenom, dateNaissance, telephone, email, pass, date_create)
+                VALUES (:nom, :prenom, :dateNaissance, :telephone, :email, :pass, NOW())
+            ");
+
+            $stmt->execute([
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'dateNaissance' => $dateNaissance,
+                'telephone' => $telephone,
+                'email' => $email,
+                'pass' => $hashedPass
+            ]);
+
+            header("Location: login.php");
+            exit;
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

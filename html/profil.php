@@ -14,7 +14,7 @@ $stmt->execute(['id' => $_SESSION['user_id']]);
 $user = $stmt->fetch();
 
 // Calcul de l'âge
-$birthDate = new DateTime($user['dateNaissance']);
+$birthDate = new DateTime($user['datenaissance']);
 $today = new DateTime();
 $age = $today->diff($birthDate)->y;
 
