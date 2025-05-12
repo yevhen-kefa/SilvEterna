@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require_once "../connexion.inc.php";
 
@@ -37,7 +38,7 @@ $dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
             <h1 class="logo">SilvEterna</h1>
             <nav>
                 <ul>
-                    <li><a href="#">Calendrier</a></li>
+                    <li><a href="">Calendrier</a></li>
                     <li><a href="#">Jeux</a></li>
                     <li><a href="#">Option</a></li>
                 </ul>

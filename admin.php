@@ -1,6 +1,14 @@
 <?php
-require_once 'silveterna_config.php'; // Faut changer cette partie
 
+require_once 'silveterna_config.php'; // Faut changer cette partie
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 // Fonction pour formater les dates
 function formatDate($date) {
     $timestamp = strtotime($date);

@@ -1,4 +1,5 @@
 <?php
+
 require_once "connexion.inc.php"; 
 
 $error = "";

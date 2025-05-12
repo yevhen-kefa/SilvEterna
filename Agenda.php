@@ -1,7 +1,15 @@
 <?php
+
 // Connexion à la base de données avec pg_connect()
 require_once 'silveterna_config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 $config_file = 'silveterna_config.php';
 if (!file_exists($config_file)) {
     die("Error: Configuration file '$config_file' not found!");
