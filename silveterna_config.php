@@ -6,7 +6,7 @@ $config = [
     'host' => 'localhost',
     'dbname' => 'silveterna',
     'user' => 'postgres',
-    'password' => '2606',
+    'password' => '1307',
 ];
 
 // Fonction pour établir la connexion à la base de données
