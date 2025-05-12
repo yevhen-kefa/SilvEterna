@@ -1,28 +1,30 @@
 <?php
-// Підключення до бази даних
-require_once "connexion.inc.php"; // Підключаємо готовий файл
+require_once "connexion.inc.php"; 
 
-// Ініціалізація повідомлення про помилку
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['em'] ?? '';
     $pass = $_POST['pass'] ?? '';
 
-    // Підготовлений запит для пошуку користувача
     $stmt = $cnx->prepare("SELECT * FROM users WHERE email = :email");
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
 
-    // Перевірка пароля (в ідеалі має бути захешований пароль)
-    if ($user && $user['pass'] === $pass) {
-        header("Location: html/profil.html");
+    if ($user && password_verify($pass, $user['pass'])) {
+        session_start(); 
+        $_SESSION['user_id'] = $user['id']; 
+        header("Location: html/profil.php"); 
         exit;
     } else {
         $error = "Identifiant ou mot de passe incorrect.";
     }
 }
+
+// sudo -u nom_username -i  psql -d nom_db  - connexion au postgresql
+
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -48,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button type="submit">Connexion</button>
             </form>
-            <p>Vous n'avez pas de compte ? <a href="register.html">Inscrivez-vous</a></p>
+            <p>Vous n'avez pas de compte ? Contactez l'Administrateur</p>
         </div>
     </div>
 </body>
