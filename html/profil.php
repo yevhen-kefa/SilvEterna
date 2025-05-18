@@ -37,9 +37,6 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
             <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
             <nav>
                 <ul>
-                    <li><a href="calendar.html">Calendrier</a></li>
-                    <li><a href="jeux.html">Jeux</a></li>
-                    <li><a href="option.html">Option</a></li>
                     <li><a href="../Agenda.php">Calendrier</a></li>
                     <li><a href="../jeux.html">Jeux</a></li>
                     <li><a href="../option.html">Option</a></li>

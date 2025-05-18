@@ -371,9 +371,13 @@ $noms_mois = [
     <div class="sidebar">
         <h1><a href="html/profil.php">SilvEterna</a></h1>
         <ul>
-            <li><a href="#">Calendrier</a></li>
-            <li><a href="#">Option</a></li>
-            <li><a href="#">Jeux</a></li>
+            <li><a href="../Agenda.php">Calendrier</a></li>
+            <li><a href="../jeux.html">Jeux</a></li>
+            <li><a href="../option.html">Option</a></li>
+            <?php if ($isAdmin) : ?>
+            <li><a href="../admin.php">Page admin</a></li>
+            <?php endif; ?>
+            <li><a href="../deconnexion.php">Deconnexion</a></li>
         </ul>
     </div>
     <div class="main-content">

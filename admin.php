@@ -44,13 +44,18 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><a href="html/profil.php">SilvEterna</a></title>
+    <title>SilvEterna</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
             height: 100vh;
             margin: 0;
+        }
+        a{
+            color: #000;
+            text-decoration: none;
+            font-style: bold;
         }
 
         .sidebar {
@@ -83,7 +88,7 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
             font-size: 24px;
             font-weight: bold;
             padding-bottom: 20px;
-            border-bottom: 1px solid #88c888;
+            border-bottom: 1px solid #b2e0c4;
             margin-bottom: 20px;
         }
         .menu-item {
@@ -97,7 +102,7 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
         }
         
         .menu-item:hover {
-            background-color: #88c888;
+            background-color: #b2e0c4;
             color: white;
         }
         
@@ -158,7 +163,7 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
             font-weight: bold;
             margin-bottom: 20px;
             color: #333;
-            border-bottom: 2px solid #a8e6cf;
+            border-bottom: 2px solid #b2e0c4;
             padding-bottom: 10px;
         }
         
@@ -227,12 +232,11 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 </head>
 <body>
     <div class="sidebar">
-        <div class="logo">SilvEterna</div>
-        <div class="menu-item">Accueil</div>
-        <div class="menu-item">Calendrier</div>
-        <div class="menu-item">Jeux</div>
-        <div class="menu-item">Options</div>
-        <div class="menu-item">Page admin</div>
+        <div class="logo"><a href="html/profil.php">SilvEterna</a></div>
+        <div class="menu-item"><a href="Agenda.php">Calendrier</a></div>
+        <div class="menu-item"><a href="html/jeux.html">Jeux</a></div>
+        <div class="menu-item"><a href="html/option.html">Options</a></div>
+        <div class="menu-item"><a href="admin.php">Page admin</a></div>
     </div>
     
     <div class="content">
