@@ -1,6 +1,6 @@
 <?php
 
-require_once "connexion.inc.php"; 
+require_once "connexion.inc.php";
 
 $error = "";
 
@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($pass, $user['pass'])) {
         session_start(); 
         $_SESSION['user_id'] = $user['id']; 
+        $_SESSION['is_admin'] = $user['is_admin'];
         header("Location: html/profil.php"); 
         exit;
     } else {

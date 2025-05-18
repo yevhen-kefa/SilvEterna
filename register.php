@@ -1,7 +1,6 @@
 <?php
 
 require_once "connexion.inc.php";
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -59,6 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
     }
+}
+$isAdmin = $_SESSION['is_admin'] ?? false;
+if (!$isAdmin) {
+    header("Location: index.php");
+    exit;
 }
 ?>
 

@@ -3,6 +3,7 @@ $host = "localhost";
 $dbname = "silveterna"; 
 $user = "postgres";
 $pass = "1307"; 
+$pass = "pass"; 
 $schema = "";
 
 try {

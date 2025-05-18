@@ -1,14 +1,12 @@
 <?php
-
 session_start();
-require_once "../connexion.inc.php";
 
-// Vérifier si l'utilisateur est connecté
+
+require_once "../connexion.inc.php";
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
 }
-
 // Chargement des données de l'utilisateur
 $stmt = $cnx->prepare("SELECT * FROM users WHERE id = :id");
 $stmt->execute(['id' => $_SESSION['user_id']]);
@@ -21,6 +19,7 @@ $age = $today->diff($birthDate)->y;
 
 // Format de la date d'enregistrement
 $dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
+$isAdmin = $_SESSION['is_admin'] ?? false;
 ?>
 
 
@@ -35,12 +34,18 @@ $dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
 <body>
     <div class="container">
         <aside class="sidebar">
-            <h1 class="logo">SilvEterna</h1>
+            <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
             <nav>
                 <ul>
                     <li><a href="calendar.html">Calendrier</a></li>
                     <li><a href="jeux.html">Jeux</a></li>
                     <li><a href="option.html">Option</a></li>
+                    <li><a href="../Agenda.php">Calendrier</a></li>
+                    <li><a href="../jeux.html">Jeux</a></li>
+                    <li><a href="../option.html">Option</a></li>
+                    <?php if ($isAdmin) : ?>
+                    <li><a href="../admin.php">Page admin</a></li>
+                    <?php endif; ?>
                     <li><a href="../deconnexion.php">Deconnexion</a></li>
                 </ul>
             </nav>

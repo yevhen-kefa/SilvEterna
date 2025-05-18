@@ -107,6 +107,7 @@ $noms_mois = [
     1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
+
 ?>
 
 <!DOCTYPE html>
@@ -368,7 +369,7 @@ $noms_mois = [
 </head>
 <body>
     <div class="sidebar">
-        <h1>SilvEterna</h1>
+        <h1><a href="html/profil.php">SilvEterna</a></h1>
         <ul>
             <li><a href="#">Calendrier</a></li>
             <li><a href="#">Option</a></li>
