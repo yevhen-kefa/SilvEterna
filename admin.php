@@ -46,6 +46,8 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SilvEterna</title>
     <style>
+        @import url("html/assets/styles/sidebar.css");
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -55,41 +57,35 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
         a{
             color: #000;
             text-decoration: none;
-            font-style: bold;
         }
 
         .sidebar {
             width: 200px;
-            background-color: #a8e6cf;
+            background-color: #c7e5d6;
             padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
         }
 
-        .sidebar h1 {
-            color: #d9138f;
+        .logo {
+            font-family: 'Cursive', sans-serif;
+            font-size: 24px;
+            color: #b52b2b;
+            margin-bottom: 40px;
         }
 
         .sidebar ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
         }
 
-        .sidebar ul li {
-            margin: 10px 0;
+        .sidebar li {
+            margin-bottom: 20px;
         }
 
-        .sidebar ul li a {
+        .sidebar a {
             text-decoration: none;
-            color: #333;
-        }
-        
-        .logo {
-            color: #9b2680;
-            font-size: 24px;
+            color: black;
             font-weight: bold;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #b2e0c4;
-            margin-bottom: 20px;
         }
         .menu-item {
             color: #333;
@@ -231,13 +227,20 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo"><a href="html/profil.php">SilvEterna</a></div>
-        <div class="menu-item"><a href="Agenda.php">Calendrier</a></div>
-        <div class="menu-item"><a href="html/jeux.html">Jeux</a></div>
-        <div class="menu-item"><a href="html/option.html">Options</a></div>
-        <div class="menu-item"><a href="admin.php">Page admin</a></div>
-    </div>
+        <aside class="sidebar">
+            <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="Agenda.php">Calendrier</a></li>
+                    <li><a href="html/jeux.php">Jeux</a></li>
+                    <li><a href="html/option.php">Option</a></li>
+                    <?php if ($isAdmin) : ?>
+                    <li><a href=".admin.php">Page admin</a></li>
+                    <?php endif; ?>
+                    <li><a href="deconnexion.php">Deconnexion</a></li>
+                </ul>
+            </nav>
+        </aside>
     
     <div class="content">
         <div class="column">

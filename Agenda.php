@@ -107,6 +107,7 @@ $noms_mois = [
     1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
+$isAdmin = $_SESSION['is_admin'] ?? false;
 
 ?>
 
@@ -117,6 +118,8 @@ $noms_mois = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda - SilvEterna</title>
     <style>
+        @import url("html/assets/styles/sidebar.css");
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -124,31 +127,7 @@ $noms_mois = [
             margin: 0;
         }
 
-        .sidebar {
-            width: 200px;
-            background-color: #a8e6cf;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h1 {
-            color: #d9138f;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin: 10px 0;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-        }
-
+       
         .main-content {
             flex-grow: 1;
             padding: 20px;
@@ -368,18 +347,20 @@ $noms_mois = [
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h1><a href="html/profil.php">SilvEterna</a></h1>
-        <ul>
-            <li><a href="../Agenda.php">Calendrier</a></li>
-            <li><a href="../jeux.html">Jeux</a></li>
-            <li><a href="../option.html">Option</a></li>
-            <?php if ($isAdmin) : ?>
-            <li><a href="../admin.php">Page admin</a></li>
-            <?php endif; ?>
-            <li><a href="../deconnexion.php">Deconnexion</a></li>
-        </ul>
-    </div>
+    <aside class="sidebar">
+        <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
+        <nav>
+            <ul>
+                <li><a href="Agenda.php">Calendrier</a></li>
+                <li><a href="html/jeux.php">Jeux</a></li>
+                <li><a href="html/option.php">Option</a></li>
+                <?php if ($isAdmin) : ?>
+                <li><a href="admin.php">Page admin</a></li>
+                <?php endif; ?>
+                <li><a href="deconnexion.php">Deconnexion</a></li>
+            </ul>
+        </nav>
+    </aside>
     <div class="main-content">
         <?php if (isset($_GET['message'])): ?>
             <div class="message">

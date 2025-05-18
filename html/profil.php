@@ -38,8 +38,8 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
             <nav>
                 <ul>
                     <li><a href="../Agenda.php">Calendrier</a></li>
-                    <li><a href="../jeux.html">Jeux</a></li>
-                    <li><a href="../option.html">Option</a></li>
+                    <li><a href="jeux.php">Jeux</a></li>
+                    <li><a href="option.php">Option</a></li>
                     <?php if ($isAdmin) : ?>
                     <li><a href="../admin.php">Page admin</a></li>
                     <?php endif; ?>

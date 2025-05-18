@@ -1,3 +1,5 @@
+@import url("sidebar.css");
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -7,35 +9,6 @@ body {
 .container {
     display: flex;
     height: 100vh;
-}
-
-.sidebar {
-    width: 200px;
-    background-color: #c7e5d6;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.logo {
-    font-family: 'Cursive', sans-serif;
-    font-size: 24px;
-    color: #b52b2b;
-    margin-bottom: 40px;
-}
-
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-.sidebar li {
-    margin-bottom: 20px;
-}
-
-.sidebar a {
-    text-decoration: none;
-    color: black;
-    font-weight: bold;
 }
 
 .profile {
