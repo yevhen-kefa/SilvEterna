@@ -83,18 +83,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $lieu = pg_escape_string($conn, $_POST['lieu']);
     $type_evenement = pg_escape_string($conn, $_POST['type_evenement']);
     
-    $sql = "INSERT INTO agenda (titre, description, date, heure_debut, heure_fin, lieu, type_evenement) 
-            VALUES ('$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement')";
+    // Récupérer le dernier ID utilisé dans la table agenda
+    $sql_last_id = "SELECT MAX(id_agenda) as max_id FROM agenda";
+    $result_last_id = pg_query($conn, $sql_last_id);
     
-    $result = pg_query($conn, $sql);
-    
-    if ($result) {
-        $message = "Événement ajouté avec succès!";
-        // Rediriger vers la même page pour éviter la resoumission du formulaire
-        header("Location: Agenda.php?mois=$mois&annee=$annee&message=" . urlencode($message));
-        exit;
+    if (!$result_last_id) {
+        $erreur = "Erreur lors de la récupération du dernier ID: " . pg_last_error($conn);
     } else {
-        $erreur = "Erreur lors de l'ajout de l'événement: " . pg_last_error($conn);
+        $row = pg_fetch_assoc($result_last_id);
+        $next_id = ($row['max_id'] !== null) ? $row['max_id'] + 1 : 1;
+        
+        // Insertion avec l'ID spécifié
+        $sql = "INSERT INTO agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement) 
+                VALUES ($next_id, '$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement')";
+        
+        $result = pg_query($conn, $sql);
+        
+        if ($result) {
+            $message = "Événement ajouté avec succès avec l'ID: $next_id!";
+            // Rediriger vers la même page pour éviter la resoumission du formulaire
+            header("Location: Agenda.php?mois=$mois&annee=$annee&message=" . urlencode($message));
+            exit;
+        } else {
+            $erreur = "Erreur lors de l'ajout de l'événement: " . pg_last_error($conn);
+        }
     }
 }
 
