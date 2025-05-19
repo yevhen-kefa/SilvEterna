@@ -20,6 +20,20 @@ $age = $today->diff($birthDate)->y;
 // Format de la date d'enregistrement
 $dateCreated = (new DateTime($user['date_create']))->format('d/m/Y');
 $isAdmin = $_SESSION['is_admin'] ?? false;
+
+// Requête pour récupérer les amis
+$friendQuery = $cnx->prepare("
+    SELECT u.id, u.prenom, u.nom, u.avatar
+    FROM amis a
+    JOIN users u ON (u.id = CASE 
+        WHEN a.ami_1 = :id THEN a.ami_2 
+        ELSE a.ami_1 
+    END)
+    WHERE a.ami_1 = :id OR a.ami_2 = :id
+");
+$friendQuery->execute(['id' => $_SESSION['user_id']]);
+$amis = $friendQuery->fetchAll();
+
 ?>
 
 
@@ -64,24 +78,25 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
         </main>
 
         <aside class="friends">
-            <h3>Vos Amis:</h3>
-            <ul class="friends-list">
+    <h3>Vos Amis :</h3>
+    <ul class="friends-list">
+        <?php if (count($amis) === 0): ?>
+            <li>Aucun ami pour le moment.</li>
+        <?php else: ?>
+            <?php foreach ($amis as $ami): ?>
                 <li>
-                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRzhLIs9SIoNtBwHQy0sYDa8-51bJA4rHuqw&s" alt="Jean" class="friend-avatar">
-                  <div class="friend-details">
-                    <span class="friend-name">Jean</span>
-                    <button class="friend-btn">Envoyer un message</button>
-                  </div>
-
-                  <img src="Frieren" alt="Frieren" class="friend-avatar">
-                  <div class="friend-details" style="display: flexbox; flex-direction: row;">
-                    <span class="friend-name">Frieren</span>
-                    <button class="friend-btn">Envoyer un message</button>
-                  </div>
+                    <img src="../avatars/<?= htmlspecialchars($ami['avatar']) ?>" alt="<?= htmlspecialchars($ami['prenom']) ?>" class="friend-avatar">
+                    <div class="friend-details">
+                        <span class="friend-name"><?= htmlspecialchars($ami['prenom'] . ' ' . $ami['nom']) ?></span>
+                        <button class="friend-btn">Envoyer un message</button>
+                    </div>
                 </li>
-              </ul>            
-              <div class="chat-box">Chat</div>
-        </aside>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </ul>            
+    <div class="chat-box">Chat</div>
+</aside>
+
     </div>
 </body>
 </html>
