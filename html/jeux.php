@@ -97,21 +97,22 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 </head>
 <body>
     <div class="container">
-        <aside class="sidebar">
+       <aside class="sidebar">
         <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 25%; width: auto;"></a>
-                <nav>
-                    <ul>
-                        <li><a href="../Agenda.php">Calendrier</a></li>
-                        <li><a href="jeux.php">Jeux</a></li>
-                        <li><a href="option.php">Option</a></li>
-                        <?php if ($isAdmin) : ?>
-                        <li><a href="../admin.php">Page admin utilisateur</a></li>
-                        <li><a href="../admin_loisir.php">Page admin loisirs</a></li>
+            <nav>
+                <ul>
+                    <li><a href="../Agenda.php">Calendrier</a></li>
+                    <li><a href="jeux.php">Jeux</a></li>
+                    <li><a href="option.php">Option</a></li>
+                    <?php if ($isAdmin) : ?>
+                    <li><a href="../Agenda_globale.php">Calendrier_globale</a></li>
+                    <li><a href="../admin.php">Page admin utilisateur</a></li>
+                    <li><a href="../admin_loisir.php">Page admin loisir</a></li>
                     <?php endif; ?>
-                        <li><a href="../deconnexion.php">Deconnexion</a></li>
-                    </ul>
-                </nav>
-            </aside>
+                    <li><a href="../deconnexion.php">Deconnexion</a></li>
+                </ul>
+            </nav>
+        </aside>
         <div class="main-content">
             <h2>JEUX DISPONIBLES</h2>
 

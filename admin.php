@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
     header("Location: login.php");
     exit;
 }
+$isAdmin = $_SESSION['is_admin'] ?? false;
 
 // Établir la connexion
 $conn = connectDB();
@@ -453,18 +454,21 @@ if ($resultUsers === false) {
 </head>
 <body>
     <aside class="sidebar">
-    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
-    <nav>
-            <ul>
-                <li><a href="Agenda.php">Calendrier</a></li>
-                <li><a href="html/jeux.php">Jeux</a></li>
-                <li><a href="html/option.php">Option</a></li>
-                <li><a href="admin.php">Page admin users</a></li>
-                <li><a href="admin_loisir.php">Page admin loisir</a></li>
-                <li><a href="deconnexion.php">Deconnexion</a></li>
-            </ul>
-        </nav>
-    </aside>
+        <a href="html/profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+            <nav>
+                <ul>
+                    <li><a href="Agenda.php">Calendrier</a></li>
+                    <li><a href="html/jeux.php">Jeux</a></li>
+                    <li><a href="html/option.php">Option</a></li>
+                    <?php if ($isAdmin) : ?>
+                    <li><a href="Agenda_globale.php">Calendrier_globale</a></li>
+                    <li><a href="admin.php">Page admin utilisateur</a></li>
+                    <li><a href="admin_loisir.php">Page admin loisir</a></li>
+                    <?php endif; ?>
+                    <li><a href="deconnexion.php">Deconnexion</a></li>
+                </ul>
+            </nav>
+        </aside>
 
     <div class="content">
         <div class="admin-panel">
