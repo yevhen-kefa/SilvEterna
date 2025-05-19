@@ -1,7 +1,15 @@
 <?php
+
 // Connexion à la base de données avec pg_connect()
 require_once 'silveterna_config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 $config_file = 'silveterna_config.php';
 if (!file_exists($config_file)) {
     die("Error: Configuration file '$config_file' not found!");
@@ -75,18 +83,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $lieu = pg_escape_string($conn, $_POST['lieu']);
     $type_evenement = pg_escape_string($conn, $_POST['type_evenement']);
     
-    $sql = "INSERT INTO agenda (titre, description, date, heure_debut, heure_fin, lieu, type_evenement) 
-            VALUES ('$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement')";
+    // Récupérer le dernier ID utilisé dans la table agenda
+    $sql_last_id = "SELECT MAX(id_agenda) as max_id FROM agenda";
+    $result_last_id = pg_query($conn, $sql_last_id);
     
-    $result = pg_query($conn, $sql);
-    
-    if ($result) {
-        $message = "Événement ajouté avec succès!";
-        // Rediriger vers la même page pour éviter la resoumission du formulaire
-        header("Location: Agenda.php?mois=$mois&annee=$annee&message=" . urlencode($message));
-        exit;
+    if (!$result_last_id) {
+        $erreur = "Erreur lors de la récupération du dernier ID: " . pg_last_error($conn);
     } else {
-        $erreur = "Erreur lors de l'ajout de l'événement: " . pg_last_error($conn);
+        $row = pg_fetch_assoc($result_last_id);
+        $next_id = ($row['max_id'] !== null) ? $row['max_id'] + 1 : 1;
+        
+        // Insertion avec l'ID spécifié
+        $sql = "INSERT INTO agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement) 
+                VALUES ($next_id, '$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement')";
+        
+        $result = pg_query($conn, $sql);
+        
+        if ($result) {
+            $message = "Événement ajouté avec succès avec l'ID: $next_id!";
+            // Rediriger vers la même page pour éviter la resoumission du formulaire
+            header("Location: Agenda.php?mois=$mois&annee=$annee&message=" . urlencode($message));
+            exit;
+        } else {
+            $erreur = "Erreur lors de l'ajout de l'événement: " . pg_last_error($conn);
+        }
     }
 }
 
@@ -99,6 +119,8 @@ $noms_mois = [
     1 => 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
 ];
+$isAdmin = $_SESSION['is_admin'] ?? false;
+
 ?>
 
 <!DOCTYPE html>
@@ -108,6 +130,8 @@ $noms_mois = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agenda - SilvEterna</title>
     <style>
+        @import url("html/assets/styles/sidebar.css");
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -115,31 +139,7 @@ $noms_mois = [
             margin: 0;
         }
 
-        .sidebar {
-            width: 200px;
-            background-color: #a8e6cf;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h1 {
-            color: #d9138f;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin: 10px 0;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
-        }
-
+       
         .main-content {
             flex-grow: 1;
             padding: 20px;
@@ -359,14 +359,21 @@ $noms_mois = [
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h1>SilvEterna</h1>
-        <ul>
-            <li><a href="#">Calendrier</a></li>
-            <li><a href="#">Option</a></li>
-            <li><a href="#">Jeux</a></li>
-        </ul>
-    </div>
+    <aside class="sidebar">
+    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+    <nav>
+            <ul>
+                <li><a href="Agenda.php">Calendrier</a></li>
+                <li><a href="html/jeux.php">Jeux</a></li>
+                <li><a href="html/option.php">Option</a></li>
+                <?php if ($isAdmin) : ?>
+                <li><a href="admin.php">Page admin</a></li>
+                <li><a href="admin_loisir.php">Page admin loisirs</a></li>
+                <?php endif; ?>
+                <li><a href="deconnexion.php">Deconnexion</a></li>
+            </ul>
+        </nav>
+    </aside>
     <div class="main-content">
         <?php if (isset($_GET['message'])): ?>
             <div class="message">

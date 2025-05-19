@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+
+require_once "../connexion.inc.php";
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
+
+$isAdmin = $_SESSION['is_admin'] ?? false;
+?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,36 +19,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeux - SilvEterna</title>
     <style>
+        @import url("assets/styles/sidebar.css");
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
             height: 100vh;
             margin: 0;
         }
-
-        .sidebar {
-            width: 200px;
-            background-color: #a8e6cf;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h1 {
-            color: #d9138f;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin: 10px 0;
-        }
-
-        .sidebar ul li a {
-            text-decoration: none;
-            color: #333;
+        .container {
+            display: flex;
+            height: 100vh;
         }
 
         .main-content {
@@ -101,32 +96,40 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h1>SilvEterna</h1>
-        <ul>
-            <li><a href="#">Calendrier</a></li>
-            <li><a href="#">Jeux</a></li>
-            <li><a href="#">Option</a></li>
-        </ul>
-    </div>
-    <div class="main-content">
-        <h2>JEUX DISPONIBLES</h2>
+    <div class="container">
+        <aside class="sidebar">
+        <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+                <nav>
+                    <ul>
+                        <li><a href="../Agenda.php">Calendrier</a></li>
+                        <li><a href="jeux.php">Jeux</a></li>
+                        <li><a href="option.php">Option</a></li>
+                        <?php if ($isAdmin) : ?>
+                        <li><a href="../admin.php">Page admin utilisateur</a></li>
+                        <li><a href="../admin_loisir.php">Page admin loisirs</a></li>
+                    <?php endif; ?>
+                        <li><a href="../deconnexion.php">Deconnexion</a></li>
+                    </ul>
+                </nav>
+            </aside>
+        <div class="main-content">
+            <h2>JEUX DISPONIBLES</h2>
 
-        <div class="game-card">
-            <img src="https://www.svgrepo.com/show/125004/chess-horse.svg" alt="Jeu d'échecs">
-            <div class="game-info">
-                <h3>Jeu d'Échecs</h3>
-                <p>Affrontez un ami ou l'ordinateur dans une partie stratégique classique.</p>
-                <button onclick="window.open('https://lichess.org', '_blank')">Jouer</button>
+            <div class="game-card">
+                <img src="https://www.svgrepo.com/show/125004/chess-horse.svg" alt="Jeu d'échecs">
+                <div class="game-info">
+                    <h3>Jeu d'Échecs</h3>
+                    <p>Affrontez un ami ou l'ordinateur dans une partie stratégique classique.</p>
+                    <button onclick="window.open('https://lichess.org', '_blank')">Jouer</button>
 
+                </div>
+            </div>
+
+            <div id="iframeJeu" class="iframe-container">
+                <iframe src="https://lichess.org/embed" allowfullscreen></iframe>
             </div>
         </div>
-
-        <div id="iframeJeu" class="iframe-container">
-            <iframe src="https://lichess.org/embed" allowfullscreen></iframe>
-        </div>
     </div>
-
     <script>
         function lancerJeu() {
             const iframeDiv = document.getElementById('iframeJeu');

@@ -1,0 +1,7 @@
+Insérez cette commande dans votre base de données
+
+ALTER TABLE users
+ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
+
+
+UPDATE users SET is_admin = TRUE WHERE id = (l'identifiant de l'utilisateur qui sera l'administrateur);
