@@ -10,15 +10,22 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
+
+$isAdmin = $_SESSION['is_admin'] ?? false;
+
 $config_file = 'silveterna_config.php';
 if (!file_exists($config_file)) {
     die("Error: Configuration file '$config_file' not found!");
 }
+$isAdmin = $_SESSION['is_admin'] ?? false;
 
-
+if (!$isAdmin) {
+    header("Location: profil.php");
+    exit;
+}
 // Utilisation de la fonction connectDB() définie dans silveterna_config.php
 $conn = connectDB();
-$id_user = intval($_SESSION['user_id']); 
+
 if (!$conn) {
     die("La connexion à la base de données a échoué : " . pg_last_error());
 }
@@ -54,23 +61,24 @@ if ($mois_suivant > 12) {
     $annee_suivant++;
 }
 
-$sql = "SELECT id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement
-FROM agenda
-WHERE id_user = $id_user
-AND EXTRACT(MONTH FROM date) = $mois
-AND EXTRACT(YEAR FROM date) = $annee";
-
+// Récupérer les événements du mois en cours
+$sql = "SELECT id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement 
+        FROM agenda 
+        WHERE EXTRACT(MONTH FROM date) = $mois 
+        AND EXTRACT(YEAR FROM date) = $annee";
 $result = pg_query($conn, $sql);
 
 if (!$result) {
-die("Erreur lors de la requête SQL : " . pg_last_error($conn));
+    die("Erreur lors de la requête SQL : " . pg_last_error($conn));
 }
 
-// Групуємо події по днях місяця
 $evenements = [];
 while ($row = pg_fetch_assoc($result)) {
-$jour = (int) date('j', strtotime($row['date']));
-$evenements[$jour][] = $row;
+    $jour = date('j', strtotime($row['date']));
+    if (!isset($evenements[$jour])) {
+        $evenements[$jour] = [];
+    }
+    $evenements[$jour][] = $row;
 }
 
 // Traitement du formulaire d'ajout d'événement
@@ -94,8 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $next_id = ($row['max_id'] !== null) ? $row['max_id'] + 1 : 1;
         
         // Insertion avec l'ID spécifié
-        $sql = "INSERT INTO agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement, id_user)
-                VALUES ($next_id, '$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement', $id_user)";
+        $sql = "INSERT INTO agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement) 
+                VALUES ($next_id, '$titre', '$description', '$date', '$heure_debut', '$heure_fin', '$lieu', '$type_evenement')";
+        
         $result = pg_query($conn, $sql);
         
         if ($result) {
@@ -445,16 +454,17 @@ $noms_mois = [
                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Heure</th>
                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Lieu</th>
                         <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Type</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">id user</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                     <?php
+                    <?php
                     // Récupérer tous les événements
-                   $sql_all = "SELECT id_agenda, titre, date, heure_debut, heure_fin, lieu, type_evenement
-FROM agenda
-WHERE id_user = $id_user
-ORDER BY date DESC, heure_debut ASC
-LIMIT 10";
+                    $sql_all = "SELECT id_agenda, titre, date, heure_debut, heure_fin, lieu, type_evenement, id_user 
+                                FROM agenda 
+                                ORDER BY date DESC, heure_debut ASC
+                                LIMIT 10";
                     $result_all = pg_query($conn, $sql_all);
                     
                     if (!$result_all) {
@@ -470,6 +480,7 @@ LIMIT 10";
                                 echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . htmlspecialchars($row['heure_debut']) . " - " . htmlspecialchars($row['heure_fin']) . "</td>";
                                 echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . htmlspecialchars($row['lieu']) . "</td>";
                                 echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . htmlspecialchars($row['type_evenement']) . "</td>";
+                                echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . htmlspecialchars($row['id_user']) . "</td>";
                                 echo "</tr>";
                             }
                         }

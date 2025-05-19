@@ -56,6 +56,7 @@ $amis = $friendQuery->fetchAll();
                     <li><a href="jeux.php">Jeux</a></li>
                     <li><a href="option.php">Option</a></li>
                     <?php if ($isAdmin) : ?>
+                    <li><a href="../Agenda_globale.php">Calendrier_globale</a></li>
                     <li><a href="../admin.php">Page admin utilisateur</a></li>
                     <li><a href="../admin_loisir.php">Page admin loisir</a></li>
                     <?php endif; ?>
