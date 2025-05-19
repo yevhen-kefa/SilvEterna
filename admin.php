@@ -453,7 +453,7 @@ if ($resultUsers === false) {
 </head>
 <body>
     <aside class="sidebar">
-    <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
     <nav>
             <ul>
                 <li><a href="Agenda.php">Calendrier</a></li>
