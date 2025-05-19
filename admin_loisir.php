@@ -238,8 +238,8 @@ $eventsResult = pg_query($conn, $eventsQuery);
 </head>
 <body>
     <aside class="sidebar">
-        <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
-        <nav>
+    <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+    <nav>
             <ul>
                 <li><a href="Agenda.php">Calendrier</a></li>
                 <li><a href="html/jeux.php">Jeux</a></li>

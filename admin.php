@@ -453,13 +453,14 @@ if ($resultUsers === false) {
 </head>
 <body>
     <aside class="sidebar">
-        <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
-        <nav>
+    <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+    <nav>
             <ul>
                 <li><a href="Agenda.php">Calendrier</a></li>
                 <li><a href="html/jeux.php">Jeux</a></li>
                 <li><a href="html/option.php">Option</a></li>
-                <li><a href="admin.php">Page admin</a></li>
+                <li><a href="admin.php">Page admin users</a></li>
+                <li><a href="admin_loisir.php">Page admin loisir</a></li>
                 <li><a href="deconnexion.php">Deconnexion</a></li>
             </ul>
         </nav>
@@ -492,6 +493,7 @@ if ($resultUsers === false) {
                         <th>Téléphone</th>
                         <th>Statut</th>
                         <th>Sexe</th>
+                        <th>Admin</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -511,6 +513,8 @@ if ($resultUsers === false) {
                                 <td><?php echo htmlspecialchars($user['telephone']); ?></td>
                                 <td><?php echo htmlspecialchars($user['statut']); ?></td>
                                 <td><?php echo htmlspecialchars($user['sexe']); ?></td>
+                                <td><?php echo htmlspecialchars($user['is_admin']); ?></td>
+
                                 <td>
                                     <button class="action-btn edit-btn" onclick="editUser(<?php echo $user['id']; ?>)">Modifier</button>
                                     <button class="action-btn delete-btn" onclick="confirmDelete(<?php echo $user['id']; ?>)">Supprimer</button>

@@ -34,7 +34,8 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 <body>
     <div class="container">
         <aside class="sidebar">
-            <img class="logo" src="../img/silverternalogo.png" style="height : 10% width : auto"><a href="profil.php"></a>
+        <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+
             <nav>
                 <ul>
                     <li><a href="../Agenda.php">Calendrier</a></li>
