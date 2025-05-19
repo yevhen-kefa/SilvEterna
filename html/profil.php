@@ -34,14 +34,16 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 <body>
     <div class="container">
         <aside class="sidebar">
-            <h1 class="logo"><a href="profil.php">SilvEterna</a></h1>
+        <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+
             <nav>
                 <ul>
                     <li><a href="../Agenda.php">Calendrier</a></li>
                     <li><a href="jeux.php">Jeux</a></li>
                     <li><a href="option.php">Option</a></li>
                     <?php if ($isAdmin) : ?>
-                    <li><a href="../admin.php">Page admin</a></li>
+                    <li><a href="../admin.php">Page admin utilisateur</a></li>
+                    <li><a href="../admin_loisir.php">Page admin loisir</a></li>
                     <?php endif; ?>
                     <li><a href="../deconnexion.php">Deconnexion</a></li>
                 </ul>
@@ -52,9 +54,7 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
             <div class="profile-header">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Flower_garden_on_Tet_2021.jpg/640px-Flower_garden_on_Tet_2021.jpg" alt="fleurs" class="header-img">
                 <div class="avatar-container">
-                    <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2F736x%2Fb5%2F78%2Fcf%2Fb578cf8c3e4b937ee94c56e59930690c.jpg&f=1&nofb=1&ipt=18feba40ed4470561cdfbfdf8a801f6ac76269e14e8ef0cef664440e845d1d08" alt="Kasane Teto" class="avatar">
-                </div>
-            </div>
+                <img src="../avatars/<?= htmlspecialchars($user['avatar'])?>" alt="Avatar" class="avatar">                </div>
             <div class="profile-info">
                 <h2><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></h2>
                 <p><strong>Age:</strong> <?= $age ?> ans</p>

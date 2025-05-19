@@ -39,7 +39,9 @@ CREATE TABLE calendrier (
   nombre_max_participants INTEGER
 );
 
-INSERT INTO calendrier (id_loisir, titre, description, lieu, date, heure_deb, heure_fin, nombre_max_participants) VALUES
+-- EH GROS ELLE SERT A QUOI LA TABLE ?????
+-- JE LAISSE MAIS AZI
+INSERT INTO calendrier (id_loisir, titre, description, lieu, date, heure_deb, heure_fin, nombre_max_participants) VALUES 
 (1, 'Randonnée', 'Randonnée dans les montagnes', 'Montagne', '2023-10-01', '09:00:00', '12:00:00', 20),
 (2, 'Cinéma', 'Soirée cinéma', 'Cinéma du centre', '2023-10-02', '19:00:00', '21:00:00', 50),
 (3, 'Concert', 'Concert de rock', 'Salle de concert', '2023-10-03', '20:00:00', '22:00:00', 100),
@@ -96,7 +98,7 @@ COMMIT;
 
 -- Таблиця messages
 CREATE TABLE messages (
-  id_message SERIAL PRIMARY KEY,
+  id_message SERIAL PRIMARY KEY ,
   contenu TEXT,
   heure_envoi TIMESTAMP,
   date_envoi DATE,
