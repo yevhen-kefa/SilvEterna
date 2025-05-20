@@ -45,7 +45,8 @@ CREATE TABLE public.agenda (
     heure_debut time without time zone,
     heure_fin time without time zone,
     lieu character varying(255),
-    type_evenement character varying(50)
+    type_evenement character varying(50),
+    id_user integer
 );
 
 
@@ -71,6 +72,42 @@ ALTER SEQUENCE public.agenda_id_agenda_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.agenda_id_agenda_seq OWNED BY public.agenda.id_agenda;
+
+
+--
+-- Name: amis; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.amis (
+    id integer NOT NULL,
+    ami_1 integer NOT NULL,
+    ami_2 integer NOT NULL,
+    CONSTRAINT check_amis_differents CHECK ((ami_1 <> ami_2))
+);
+
+
+ALTER TABLE public.amis OWNER TO postgres;
+
+--
+-- Name: amis_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.amis_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.amis_id_seq OWNER TO postgres;
+
+--
+-- Name: amis_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.amis_id_seq OWNED BY public.amis.id;
 
 
 --
@@ -174,20 +211,6 @@ CREATE TABLE public.envoyer_mess (
 
 
 ALTER TABLE public.envoyer_mess OWNER TO postgres;
-
---
--- Name: etre_ami; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.etre_ami (
-    id_ami1 integer NOT NULL,
-    id_ami2 integer NOT NULL,
-    statut character varying(50),
-    date_creation timestamp without time zone
-);
-
-
-ALTER TABLE public.etre_ami OWNER TO postgres;
 
 --
 -- Name: login; Type: TABLE; Schema: public; Owner: postgres
@@ -383,6 +406,13 @@ ALTER TABLE ONLY public.agenda ALTER COLUMN id_agenda SET DEFAULT nextval('publi
 
 
 --
+-- Name: amis id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.amis ALTER COLUMN id SET DEFAULT nextval('public.amis_id_seq'::regclass);
+
+
+--
 -- Name: calendrier id_loisir; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -436,10 +466,19 @@ COPY public.a_un_agenda (id_user, id_agenda) FROM stdin;
 -- Data for Name: agenda; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement) FROM stdin;
-2	Anniversaire	Anniversaire de Marie	2023-10-04	19:00:00	22:00:00	Maison de Marie	Personnel
-4	Voyage	Voyage Ã  Paris	2023-10-06	08:00:00	18:00:00	Paris	Personnel
-5	tetsd	hbdhxgdzi	2025-05-01	11:02:00	04:05:00	chedte	Rendez-vous
+COPY public.agenda (id_agenda, titre, description, date, heure_debut, heure_fin, lieu, type_evenement, id_user) FROM stdin;
+2	Anniversaire	Anniversaire de Marie	2023-10-04	19:00:00	22:00:00	Maison de Marie	Personnel	\N
+4	Voyage	Voyage Ã  Paris	2023-10-06	08:00:00	18:00:00	Paris	Personnel	\N
+5	tetsd	hbdhxgdzi	2025-05-01	11:02:00	04:05:00	chedte	Rendez-vous	\N
+\.
+
+
+--
+-- Data for Name: amis; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.amis (id, ami_1, ami_2) FROM stdin;
+1	5	7
 \.
 
 
@@ -476,14 +515,6 @@ COPY public.creer (id_user, id_loisir) FROM stdin;
 --
 
 COPY public.envoyer_mess (id_user, id_message) FROM stdin;
-\.
-
-
---
--- Data for Name: etre_ami; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.etre_ami (id_ami1, id_ami2, statut, date_creation) FROM stdin;
 \.
 
 
@@ -567,6 +598,13 @@ SELECT pg_catalog.setval('public.agenda_id_agenda_seq', 3, true);
 
 
 --
+-- Name: amis_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.amis_id_seq', 1, true);
+
+
+--
 -- Name: calendrier_id_loisir_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -625,6 +663,14 @@ ALTER TABLE ONLY public.agenda
 
 
 --
+-- Name: amis amis_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.amis
+    ADD CONSTRAINT amis_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: calendrier calendrier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -654,14 +700,6 @@ ALTER TABLE ONLY public.creer
 
 ALTER TABLE ONLY public.envoyer_mess
     ADD CONSTRAINT envoyer_mess_pkey PRIMARY KEY (id_user, id_message);
-
-
---
--- Name: etre_ami etre_ami_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.etre_ami
-    ADD CONSTRAINT etre_ami_pkey PRIMARY KEY (id_ami1, id_ami2);
 
 
 --
@@ -710,6 +748,14 @@ ALTER TABLE ONLY public.se_connecter
 
 ALTER TABLE ONLY public.statut
     ADD CONSTRAINT statut_pkey PRIMARY KEY (id_statut);
+
+
+--
+-- Name: amis uc_amis; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.amis
+    ADD CONSTRAINT uc_amis UNIQUE (ami_1, ami_2);
 
 
 --
@@ -781,19 +827,19 @@ ALTER TABLE ONLY public.a_un_agenda
 
 
 --
--- Name: etre_ami fk_ami1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: amis fk_ami_1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.etre_ami
-    ADD CONSTRAINT fk_ami1 FOREIGN KEY (id_ami1) REFERENCES public.users(id);
+ALTER TABLE ONLY public.amis
+    ADD CONSTRAINT fk_ami_1 FOREIGN KEY (ami_1) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
--- Name: etre_ami fk_ami2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: amis fk_ami_2; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.etre_ami
-    ADD CONSTRAINT fk_ami2 FOREIGN KEY (id_ami2) REFERENCES public.users(id);
+ALTER TABLE ONLY public.amis
+    ADD CONSTRAINT fk_ami_2 FOREIGN KEY (ami_2) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
@@ -874,6 +920,14 @@ ALTER TABLE ONLY public.posseder
 
 ALTER TABLE ONLY public.posseder
     ADD CONSTRAINT fk_posseder_user FOREIGN KEY (id_user) REFERENCES public.users(id);
+
+
+--
+-- Name: agenda fk_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.agenda
+    ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --
