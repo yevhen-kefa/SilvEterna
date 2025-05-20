@@ -253,11 +253,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_user'])) {
     }
 }
 
-// Récupérer tous les utilisateurs
+// Récupérer tous les utilisateurs avec recherche
 $currentUserId = $_SESSION['user_id']; // ID de l'utilisateur actuel
+$searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-$queryUsers = "SELECT * FROM users WHERE id != $1 ORDER BY nom, prenom";
-$resultUsers = pg_query_params($conn, $queryUsers, array($currentUserId));
+if (!empty($searchTerm)) {
+    // Requête avec filtre de recherche (nom, prénom ou login)
+    $queryUsers = "SELECT * FROM users WHERE id != $1 AND 
+                  (LOWER(nom) LIKE LOWER($2) OR 
+                   LOWER(prenom) LIKE LOWER($2) OR 
+                   LOWER(login) LIKE LOWER($2)) 
+                   ORDER BY nom, prenom";
+    $resultUsers = pg_query_params($conn, $queryUsers, array($currentUserId, '%'.$searchTerm.'%'));
+} else {
+    // Requête sans filtre
+    $queryUsers = "SELECT * FROM users WHERE id != $1 ORDER BY nom, prenom";
+    $resultUsers = pg_query_params($conn, $queryUsers, array($currentUserId));
+}
 
 // Récupérer les relations d'amitié de l'utilisateur actuel
 $queryFriends = "SELECT * FROM amis WHERE ami_1 = $1 OR ami_2 = $1";
@@ -524,6 +536,49 @@ if ($resultUsers === false) {
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+        }
+        
+        /* Styles pour la barre de recherche */
+        .search-container {
+            margin: 20px 0;
+        }
+        
+        .search-form {
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 14px;
+        }
+        
+        .search-btn {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .clear-search {
+            margin-left: 10px;
+            color: #f44336;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .admin-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             margin-bottom: 20px;
         }
     </style>
@@ -543,7 +598,7 @@ if ($resultUsers === false) {
 
     <div class="content">
         <div class="admin-panel">
-            <h1>Panel d'administration</h1>
+            <h1>Rechercher utilisateurs</h1>
             
             <?php if (!empty($successMessage)): ?>
                 <div class="message success"><?php echo $successMessage; ?></div>
@@ -553,7 +608,20 @@ if ($resultUsers === false) {
                 <div class="message error"><?php echo $errorMessage; ?></div>
             <?php endif; ?>
             
-            <button class="add-user-btn" id="addUserBtn">Ajouter un nouvel utilisateur</button>
+            <div class="admin-actions">
+                
+                <!-- Barre de recherche -->
+                <div class="search-container">
+                    <form action="" method="GET" class="search-form">
+                        <input type="text" name="search" placeholder="Rechercher par nom, prénom ou login..." 
+                               value="<?php echo htmlspecialchars($searchTerm ?? ''); ?>" class="search-input">
+                        <button type="submit" class="search-btn">Rechercher</button>
+                        <?php if (!empty($searchTerm)): ?>
+                            <a href="?clear" class="clear-search">Effacer</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
             
             <h2>Liste des utilisateurs</h2>
             <table>
@@ -574,7 +642,7 @@ if ($resultUsers === false) {
                         <?php while ($user = pg_fetch_assoc($resultUsers)): ?>
                             <tr>
                                 <td>
-                                    <img src="<?php echo !empty($user['avatar']) ? 'avatars/' . htmlspecialchars($user['avatar']) : '/api/placeholder/50/50'; ?>" 
+                                    <img src="<?php echo !empty($user['avatar']) ? '../avatars/' . htmlspecialchars($user['avatar']) : '/api/placeholder/50/50'; ?>" 
                                         alt="Avatar" width="50" height="50" style="border-radius: 50%;">
                                 </td>
                                 <td><?php echo htmlspecialchars($user['nom']); ?></td>
@@ -592,6 +660,10 @@ if ($resultUsers === false) {
                                 </td>
                             </tr>
                         <?php endwhile; ?>
+                    <?php elseif (!empty($searchTerm)): ?>
+                        <tr>
+                            <td colspan="8">Aucun utilisateur trouvé pour la recherche "<?php echo htmlspecialchars($searchTerm); ?>"</td>
+                        </tr>
                     <?php else: ?>
                         <tr>
                             <td colspan="8">Aucun utilisateur trouvé</td>
