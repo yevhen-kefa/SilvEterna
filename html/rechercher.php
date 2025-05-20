@@ -27,6 +27,34 @@ function formatDate($date) {
 $successMessage = '';
 $errorMessage = '';
 
+// Ajout d'un ami
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_friend'])) {
+    $ami1 = $_SESSION['user_id']; // L'utilisateur actuel
+    $ami2 = $_POST['ami_id']; // L'ami ciblé
+    
+    // Vérifier si l'amitié existe déjà
+    $checkFriendshipQuery = "SELECT * FROM amis WHERE 
+                            (ami_1 = $1 AND ami_2 = $2) OR 
+                            (ami_1 = $2 AND ami_2 = $1)";
+    $checkFriendshipResult = pg_query_params($conn, $checkFriendshipQuery, array($ami1, $ami2));
+    
+    if (pg_num_rows($checkFriendshipResult) > 0) {
+        $errorMessage = "Cette relation d'amitié existe déjà.";
+    } else {
+        // Ajouter la nouvelle relation d'amitié
+        $addFriendQuery = "INSERT INTO amis (ami_1, ami_2) 
+                          VALUES ($1, $2)";
+        $addFriendResult = pg_query_params($conn, $addFriendQuery, array($ami1, $ami2));
+        
+        if ($addFriendResult) {
+            $successMessage = "L'ami a été ajouté avec succès.";
+        } else {
+            $errorMessage = "Erreur lors de l'ajout de l'ami : " . pg_last_error($conn);
+        }
+    }
+}
+
+// Traitement de la modification d'un utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     $userId = $_POST['user_id'];
     $nom = $_POST['nom'];
@@ -117,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
         'a_un_agenda' => 'id_user',
         'creer' => 'id_user',
         'envoyer_mess' => 'id_user',
-        'etre_ami' => array('id_ami1', 'id_ami2'),
+        'amis' => array('ami_1', 'ami_2'),
         'participer' => 'id_user',
         'posseder' => 'id_user',
         'se_connecter' => 'id_user'
@@ -231,6 +259,21 @@ $currentUserId = $_SESSION['user_id']; // ID de l'utilisateur actuel
 $queryUsers = "SELECT * FROM users WHERE id != $1 ORDER BY nom, prenom";
 $resultUsers = pg_query_params($conn, $queryUsers, array($currentUserId));
 
+// Récupérer les relations d'amitié de l'utilisateur actuel
+$queryFriends = "SELECT * FROM amis WHERE ami_1 = $1 OR ami_2 = $1";
+$resultFriends = pg_query_params($conn, $queryFriends, array($currentUserId));
+
+// Créer un tableau d'IDs d'amis pour vérification rapide
+$friendIds = array();
+if ($resultFriends && pg_num_rows($resultFriends) > 0) {
+    while ($friendship = pg_fetch_assoc($resultFriends)) {
+        if ($friendship['ami_1'] == $currentUserId) {
+            $friendIds[] = $friendship['ami_2'];
+        } else {
+            $friendIds[] = $friendship['ami_1'];
+        }
+    }
+}
 
 if ($resultUsers === false) {
     $errorMessage = "Erreur SQL : " . pg_last_error($conn);
@@ -373,24 +416,55 @@ if ($resultUsers === false) {
 
         .modal-content {
             background-color: #fefefe;
-            margin: 5% auto;
+            margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
-            max-width: 700px;
+            width: 300px;
             border-radius: 8px;
+            text-align: center;
         }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+        .modal-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .modal-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
         }
 
-        .close:hover {
-            color: black;
+        .confirm-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .friend-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .friend-active {
+            background-color: #4CAF50;
         }
 
         form {
@@ -456,14 +530,12 @@ if ($resultUsers === false) {
 </head>
 <body>
     <aside class="sidebar">
-    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+    <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 15%; width: auto;"></a>
     <nav>
             <ul>
                 <li><a href="../Agenda.php">Calendrier</a></li>
                 <li><a href="jeux.php">Jeux</a></li>
                 <li><a href="option.php">Option</a></li>
-
-
                 <li><a href="deconnexion.php">Deconnexion</a></li>
             </ul>
         </nav>
@@ -494,7 +566,6 @@ if ($resultUsers === false) {
                         <th>Date de naissance</th>
                         <th>Statut</th>
                         <th>Sexe</th>
-
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -512,15 +583,18 @@ if ($resultUsers === false) {
                                 <td><?php echo !empty($user['datenaissance']) ? formatDate($user['datenaissance']) : ''; ?></td>
                                 <td><?php echo htmlspecialchars($user['statut']); ?></td>
                                 <td><?php echo htmlspecialchars($user['sexe']); ?></td>
-
                                 <td>
-                                    <button class="action-btn edit-btn" onclick="openAddFriendModal(7)">Ajouter en ami</button>
+                                    <?php if (in_array($user['id'], $friendIds)): ?>
+                                        <span class="friend-status friend-active">Ami</span>
+                                    <?php else: ?>
+                                        <button class="action-btn edit-btn" onclick="openAddFriendModal(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['nom']); ?> <?php echo htmlspecialchars($user['prenom']); ?>')">Ajouter en ami</button>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="10">Aucun utilisateur trouvé</td>
+                            <td colspan="8">Aucun utilisateur trouvé</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -528,299 +602,44 @@ if ($resultUsers === false) {
         </div>
     </div>
 
-    <!-- Modal pour modifier un utilisateur -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Modifier l'utilisateur</h2>
-            <form id="editForm" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="user_id" id="edit_user_id">
-                <input type="hidden" name="update_user" value="1">
-                
-                <div class="form-group">
-                    <label for="edit_avatar">Avatar:</label>
-                    <img id="avatarPreview" class="avatar-preview" src="/api/placeholder/100/100" alt="Avatar prévisualisation">
-                    <input type="file" id="edit_avatar" name="avatar" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_nom">Nom:</label>
-                    <input type="text" id="edit_nom" name="nom" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_prenom">Prénom:</label>
-                    <input type="text" id="edit_prenom" name="prenom" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_login">Login:</label>
-                    <input type="text" id="edit_login" name="login" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_email">Email:</label>
-                    <input type="email" id="edit_email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_dateNaissance">Date de naissance:</label>
-                    <input type="date" id="edit_dateNaissance" name="dateNaissance">
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_telephone">Téléphone:</label>
-                    <input type="tel" id="edit_telephone" name="telephone">
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_statut">Statut:</label>
-                    <select id="edit_statut" name="statut">
-                        <option value="actif">Actif</option>
-                        <option value="inactif">Inactif</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit_sexe">Sexe:</label>
-                    <select id="edit_sexe" name="sexe">
-                        <option value="M">Masculin</option>
-                        <option value="F">Féminin</option>
-                        <option value="A">Autre</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="submit-btn">Mettre à jour</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal pour ajouter un utilisateur -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Ajouter un nouvel utilisateur</h2>
-            <form id="addForm" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="create_user" value="1">
-                
-                <div class="form-group">
-                    <label for="add_avatar">Avatar:</label>
-                    <img id="newAvatarPreview" class="avatar-preview" src="/api/placeholder/100/100" alt="Avatar prévisualisation">
-                    <input type="file" id="add_avatar" name="avatar" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_nom">Nom:</label>
-                    <input type="text" id="add_nom" name="nom" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_prenom">Prénom:</label>
-                    <input type="text" id="add_prenom" name="prenom" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_login">Login:</label>
-                    <input type="text" id="add_login" name="login" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_email">Email:</label>
-                    <input type="email" id="add_email" name="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_pass">Mot de passe:</label>
-                    <input type="password" id="add_pass" name="pass" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_dateNaissance">Date de naissance:</label>
-                    <input type="date" id="add_dateNaissance" name="dateNaissance">
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_telephone">Téléphone:</label>
-                    <input type="tel" id="add_telephone" name="telephone">
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_statut">Statut:</label>
-                    <select id="add_statut" name="statut">
-                        <option value="actif">Actif</option>
-                        <option value="inactif">Inactif</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="add_sexe">Sexe:</label>
-                    <select id="add_sexe" name="sexe">
-                        <option value="M">Masculin</option>
-                        <option value="F">Féminin</option>
-                        <option value="A">Autre</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="submit-btn">Créer l'utilisateur</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal de confirmation de suppression -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <span class="close">&times;</span>
-            <h2>Confirmation de suppression</h2>
-            <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
-            <form id="deleteForm" method="POST">
-                <input type="hidden" name="user_id" id="delete_user_id">
-                <input type="hidden" name="delete_user" value="1">
-                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <button type="button" class="action-btn" style="background-color: #ccc;" onclick="closeDeleteModal()">Annuler</button>
-                    <button type="submit" class="action-btn delete-btn">Supprimer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Modal d'ajout d'ami -->
-<div id="addFriendModal" style="display:none;">
-    <p>Confirmer l’ajout de l’ami ?</p>
-    <form method="POST" action="ajouter_ami.php">
-        <input type="hidden" id="amiCible" name="amiCible" value="">
-        <button type="submit">Confirmer</button>
-        <button type="button" onclick="closeAddFriendModal()">Annuler</button>
-    </form>
-</div>
+    <div id="addFriendModal" class="modal">
+        <div class="modal-content">
+            <h3>Ajouter un ami</h3>
+            <p id="friendConfirmText">Voulez-vous ajouter cette personne comme ami ?</p>
+            <div class="modal-actions">
+                <form method="POST" action="">
+                    <input type="hidden" id="ami_id" name="ami_id" value="">
+                    <input type="hidden" name="add_friend" value="1">
+                    <button type="submit" class="modal-btn confirm-btn">Confirmer</button>
+                    <button type="button" class="modal-btn cancel-btn" onclick="closeAddFriendModal()">Annuler</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Variables pour les modals
-        var editModal = document.getElementById("editModal");
-        var addModal = document.getElementById("addModal");
-        var deleteModal = document.getElementById("deleteModal");
+        // Références aux modals
+        var addFriendModal = document.getElementById("addFriendModal");
         
-        // Boutons pour ouvrir les modals
-        var addUserBtn = document.getElementById("addUserBtn");
-        
-        // Boutons pour fermer les modals
-        var closeButtons = document.getElementsByClassName("close");
-        
-        // Afficher le modal d'ajout d'utilisateur
-        addUserBtn.onclick = function() {
-            addModal.style.display = "block";
+        // Fonction pour ouvrir le modal d'ajout d'ami
+        function openAddFriendModal(userId, userName) {
+            document.getElementById("ami_id").value = userId;
+            document.getElementById("friendConfirmText").innerText = "Voulez-vous ajouter " + userName + " comme ami ?";
+            addFriendModal.style.display = "block";
         }
         
-        // Fermer les modals quand on clique sur le X
-        for (var i = 0; i < closeButtons.length; i++) {
-            closeButtons[i].onclick = function() {
-                editModal.style.display = "none";
-                addModal.style.display = "none";
-                deleteModal.style.display = "none";
-            }
+        // Fonction pour fermer le modal d'ajout d'ami
+        function closeAddFriendModal() {
+            addFriendModal.style.display = "none";
         }
         
-        // Fermer les modals quand on clique en dehors
+        // Fermer le modal quand on clique en dehors
         window.onclick = function(event) {
-            if (event.target == editModal) {
-                editModal.style.display = "none";
-            }
-            if (event.target == addModal) {
-                addModal.style.display = "none";
-            }
-            if (event.target == deleteModal) {
-                deleteModal.style.display = "none";
+            if (event.target == addFriendModal) {
+                addFriendModal.style.display = "none";
             }
         }
-        
-        // Fonction pour éditer un utilisateur
-        function editUser(userId) {
-            // Réinitialiser le formulaire
-            document.getElementById("editForm").reset();
-            
-            // Faire une requête AJAX pour récupérer les données de l'utilisateur
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'get_user.php?id=' + userId, true);
-            
-            xhr.onload = function() {
-                if (this.status === 200) {
-                    var user = JSON.parse(this.responseText);
-                    
-                    // Remplir le formulaire avec les données de l'utilisateur
-                    document.getElementById("edit_user_id").value = user.id;
-                    document.getElementById("edit_nom").value = user.nom;
-                    document.getElementById("edit_prenom").value = user.prenom;
-                    document.getElementById("edit_login").value = user.login;
-                    document.getElementById("edit_email").value = user.email;
-                    document.getElementById("edit_dateNaissance").value = user.dateNaissance;
-                    document.getElementById("edit_telephone").value = user.telephone;
-                    document.getElementById("edit_statut").value = user.statut;
-                    document.getElementById("edit_sexe").value = user.sexe;
-                    
-                    // Afficher l'avatar s'il existe
-                    var avatarPreview = document.getElementById("avatarPreview");
-                    if (user.avatar) {
-                        avatarPreview.src = 'avatars/' + user.avatar;
-                    } else {
-                        avatarPreview.src = '/api/placeholder/100/100';
-                    }
-                    
-                    // Afficher le modal
-                    editModal.style.display = "block";
-                }
-            };
-            
-            xhr.send();
-        }
-        // Ajoutez ce code à la fin de votre section <script>
-
-// Fonction pour confirmer la suppression d'un utilisateur
-function confirmDelete(userId) {
-    // Définir l'ID de l'utilisateur à supprimer
-    document.getElementById("delete_user_id").value = userId;
-    
-    // Afficher le modal de confirmation
-    deleteModal.style.display = "block";
-}
-
-// Fonction pour fermer le modal de confirmation de suppression
-function closeDeleteModal() {
-    deleteModal.style.display = "none";
-}
-
-// Prévisualisation de l'avatar lors du téléchargement (pour le formulaire d'édition)
-document.getElementById('edit_avatar').addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    var reader = new FileReader();
-    
-    reader.onload = function(e) {
-        document.getElementById('avatarPreview').src = e.target.result;
-    };
-    
-    if (file) {
-        reader.readAsDataURL(file);
-    }
-});
-
-// Prévisualisation de l'avatar lors du téléchargement (pour le formulaire d'ajout)
-document.getElementById('add_avatar').addEventListener('change', function(event) {
-    var file = event.target.files[0];
-    var reader = new FileReader();
-    
-    reader.onload = function(e) {
-        document.getElementById('newAvatarPreview').src = e.target.result;
-    };
-    
-    if (file) {
-        reader.readAsDataURL(file);
-    }
-});
-
-function openAddFriendModal(userId) {
-    document.getElementById("amiCible").value = userId;
-    document.getElementById("addFriendModal").style.display = "block";
-}
-
-function closeAddFriendModal() {
-    document.getElementById("addFriendModal").style.display = "none";
-}
-</script>
+    </script>
+</body>
+</html>
