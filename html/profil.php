@@ -90,13 +90,27 @@ $amis = $friendQuery->fetchAll();
                     <img src="../avatars/<?= htmlspecialchars($ami['avatar']) ?>" alt="<?= htmlspecialchars($ami['prenom']) ?>" class="friend-avatar">
                     <div class="friend-details">
                         <span class="friend-name"><?= htmlspecialchars($ami['prenom'] . ' ' . $ami['nom']) ?></span>
-                        <button class="friend-btn">Envoyer un message</button>
+                        <button class="friend-btn" onclick="openChatPopup(<?= htmlspecialchars($ami['id']) ?>)">Envoyer un message</button>
+
+                        <script>
+                            function openChatPopup(friendId) {
+                                const popup = window.open(
+                                    `chat.php?friend_id=${friendId}`,
+                                    'ChatPopup',
+                                    'width=600,height=400,scrollbars=yes,resizable=yes'
+                                );
+                                if (popup) {
+                                    popup.focus();
+                                } else {
+                                    alert('Veuillez autoriser les popups pour ouvrir le chat.');
+                                }
+                            }
+                        </script>
                     </div>
                 </li>
             <?php endforeach; ?>
         <?php endif; ?>
     </ul>            
-    <div class="chat-box">Chat</div>
 </aside>
 
     </div>

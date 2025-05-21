@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "silveterna"; 
 $user = "postgres";
-$pass = "2606"; 
+$pass = "root"; 
 $schema = "";
 
 try {
