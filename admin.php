@@ -28,6 +28,7 @@ function formatDate($date) {
 $successMessage = '';
 $errorMessage = '';
 
+// Traitement de la modification d'un utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     $userId = $_POST['user_id'];
     $nom = $_POST['nom'];
@@ -53,21 +54,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
         if (pg_num_rows($checkEmailResult) > 0) {
             $errorMessage = "Cet email est déjà utilisé par un autre utilisateur.";
         } else {
-            // Mise à jour des informations de l'utilisateur
-            $updateQuery = "UPDATE users SET 
-                nom = $1, 
-                prenom = $2, 
-                login = $3, 
-                email = $4, 
-                dateNaissance = $5, 
-                telephone = $6, 
-                statut = $7, 
-                sexe = $8 
-                WHERE id = $9";
-            
-            $updateResult = pg_query_params($conn, $updateQuery, array(
-                $nom, $prenom, $login, $email, $dateNaissance, $telephone, $statut, $sexe, $userId
-            ));
+            // Préparer la requête de mise à jour
+            if (!empty($_POST['pass'])) {
+                // Si un nouveau mot de passe est fourni, le hacher et l'inclure dans la mise à jour
+                $hashedPassword = password_hash($_POST['pass'], PASSWORD_DEFAULT);
+                $updateQuery = "UPDATE users SET 
+                    nom = $1, 
+                    prenom = $2, 
+                    login = $3, 
+                    email = $4, 
+                    dateNaissance = $5, 
+                    telephone = $6, 
+                    statut = $7, 
+                    sexe = $8,
+                    pass = $9
+                    WHERE id = $10";
+                
+                $updateResult = pg_query_params($conn, $updateQuery, array(
+                    $nom, $prenom, $login, $email, $dateNaissance, $telephone, $statut, $sexe, $hashedPassword, $userId
+                ));
+            } else {
+                // Si aucun mot de passe n'est fourni, ne pas le modifier
+                $updateQuery = "UPDATE users SET 
+                    nom = $1, 
+                    prenom = $2, 
+                    login = $3, 
+                    email = $4, 
+                    dateNaissance = $5, 
+                    telephone = $6, 
+                    statut = $7, 
+                    sexe = $8
+                    WHERE id = $9";
+                
+                $updateResult = pg_query_params($conn, $updateQuery, array(
+                    $nom, $prenom, $login, $email, $dateNaissance, $telephone, $statut, $sexe, $userId
+                ));
+            }
             
             if ($updateResult) {
                 // Traitement de l'image de profil si téléchargée
@@ -109,118 +131,78 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     }
 }
 
-// Suppression d'un utilisateur
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_user'])) {
-    $userId = $_POST['user_id'];
-    
-    // Vérifier et supprimer les relations dans les tables liées
-    $tables = array(
-        'a_un_agenda' => 'id_user',
-        'creer' => 'id_user',
-        'envoyer_mess' => 'id_user',
-        'etre_ami' => array('id_ami1', 'id_ami2'),
-        'participer' => 'id_user',
-        'posseder' => 'id_user',
-        'se_connecter' => 'id_user'
-    );
-    
-    pg_query($conn, "BEGIN");
-    
-    try {
-        foreach ($tables as $table => $columns) {
-            if (is_array($columns)) {
-                foreach ($columns as $column) {
-                    $deleteRelationQuery = "DELETE FROM $table WHERE $column = $1";
-                    pg_query_params($conn, $deleteRelationQuery, array($userId));
-                }
-            } else {
-                $deleteRelationQuery = "DELETE FROM $table WHERE $columns = $1";
-                pg_query_params($conn, $deleteRelationQuery, array($userId));
-            }
-        }
-        
-        // Supprimer l'utilisateur
-        $deleteUserQuery = "DELETE FROM users WHERE id = $1";
-        $deleteResult = pg_query_params($conn, $deleteUserQuery, array($userId));
-        
-        if ($deleteResult) {
-            pg_query($conn, "COMMIT");
-            $successMessage = "L'utilisateur a été supprimé avec succès.";
-        } else {
-            throw new Exception(pg_last_error($conn));
-        }
-    } catch (Exception $e) {
-        pg_query($conn, "ROLLBACK");
-        $errorMessage = "Erreur lors de la suppression : " . $e->getMessage();
-    }
-}
-
 // Création d'un nouvel utilisateur
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_user'])) {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $login = $_POST['login'];
     $email = $_POST['email'];
-    $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT); // Hachage du mot de passe
     $dateNaissance = $_POST['dateNaissance'];
     $telephone = $_POST['telephone'];
     $statut = $_POST['statut'];
     $sexe = $_POST['sexe'];
     
-    // Vérifier si le login est déjà utilisé
-    $checkLoginQuery = "SELECT id FROM users WHERE login = $1";
-    $checkLoginResult = pg_query_params($conn, $checkLoginQuery, array($login));
-    
-    if (pg_num_rows($checkLoginResult) > 0) {
-        $errorMessage = "Ce login est déjà utilisé.";
+    // Vérifier qu'un mot de passe a été fourni
+    if (empty($_POST['pass'])) {
+        $errorMessage = "Le mot de passe est obligatoire pour créer un utilisateur.";
     } else {
-        // Vérifier si l'email est déjà utilisé
-        $checkEmailQuery = "SELECT id FROM users WHERE email = $1";
-        $checkEmailResult = pg_query_params($conn, $checkEmailQuery, array($email));
+        $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT); // Hachage du mot de passe
         
-        if (pg_num_rows($checkEmailResult) > 0) {
-            $errorMessage = "Cet email est déjà utilisé.";
+        // Vérifier si le login est déjà utilisé
+        $checkLoginQuery = "SELECT id FROM users WHERE login = $1";
+        $checkLoginResult = pg_query_params($conn, $checkLoginQuery, array($login));
+        
+        if (pg_num_rows($checkLoginResult) > 0) {
+            $errorMessage = "Ce login est déjà utilisé.";
         } else {
-            // Insertion du nouvel utilisateur
-            $createQuery = "INSERT INTO users (nom, prenom, login, email, pass, dateNaissance, telephone, statut, sexe, date_create) 
-                            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING id";
+            // Vérifier si l'email est déjà utilisé
+            $checkEmailQuery = "SELECT id FROM users WHERE email = $1";
+            $checkEmailResult = pg_query_params($conn, $checkEmailQuery, array($email));
             
-            $createResult = pg_query_params($conn, $createQuery, array(
-                $nom, $prenom, $login, $email, $pass, $dateNaissance, $telephone, $statut, $sexe
-            ));
-            
-            if ($createResult) {
-                $newUser = pg_fetch_assoc($createResult);
-                $userId = $newUser['id'];
+            if (pg_num_rows($checkEmailResult) > 0) {
+                $errorMessage = "Cet email est déjà utilisé.";
+            } else {
+                // Insertion du nouvel utilisateur
+                $createQuery = "INSERT INTO users (nom, prenom, login, email, pass, dateNaissance, telephone, statut, sexe, date_create) 
+                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING id";
                 
-                // Traitement de l'image de profil si téléchargée
-                if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
-                    $allowed = array('jpg', 'jpeg', 'png', 'gif');
-                    $filename = $_FILES['avatar']['name'];
-                    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+                $createResult = pg_query_params($conn, $createQuery, array(
+                    $nom, $prenom, $login, $email, $pass, $dateNaissance, $telephone, $statut, $sexe
+                ));
+                
+                if ($createResult) {
+                    $newUser = pg_fetch_assoc($createResult);
+                    $userId = $newUser['id'];
                     
-                    if (in_array(strtolower($ext), $allowed)) {
-                        // Dossier d'avatars
-                        $avatar_dir = 'avatars/';
-                        if (!file_exists($avatar_dir)) {
-                            mkdir($avatar_dir, 0777, true);
-                        }
+                    // Traitement de l'image de profil si téléchargée
+                    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] == 0) {
+                        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+                        $filename = $_FILES['avatar']['name'];
+                        $ext = pathinfo($filename, PATHINFO_EXTENSION);
                         
-                        // Création d'un nom unique pour l'image
-                        $new_avatar_name = uniqid('avatar_') . '.' . $ext;
-                        $avatar_path = $avatar_dir . $new_avatar_name;
-                        
-                        if (move_uploaded_file($_FILES['avatar']['tmp_name'], $avatar_path)) {
-                            // Mettre à jour le chemin de l'avatar dans la base de données
-                            $updateAvatarQuery = "UPDATE users SET avatar = $1 WHERE id = $2";
-                            pg_query_params($conn, $updateAvatarQuery, array($new_avatar_name, $userId));
+                        if (in_array(strtolower($ext), $allowed)) {
+                            // Dossier d'avatars
+                            $avatar_dir = 'avatars/';
+                            if (!file_exists($avatar_dir)) {
+                                mkdir($avatar_dir, 0777, true);
+                            }
+                            
+                            // Création d'un nom unique pour l'image
+                            $new_avatar_name = uniqid('avatar_') . '.' . $ext;
+                            $avatar_path = $avatar_dir . $new_avatar_name;
+                            
+                            if (move_uploaded_file($_FILES['avatar']['tmp_name'], $avatar_path)) {
+                                // Mettre à jour le chemin de l'avatar dans la base de données
+                                $updateAvatarQuery = "UPDATE users SET avatar = $1 WHERE id = $2";
+                                pg_query_params($conn, $updateAvatarQuery, array($new_avatar_name, $userId));
+                            }
                         }
                     }
+                    
+                    $successMessage = "Le nouvel utilisateur a été créé avec succès avec le mot de passe défini.";
+                } else {
+                    $errorMessage = "Erreur lors de la création : " . pg_last_error($conn);
                 }
-                
-                $successMessage = "Le nouvel utilisateur a été créé avec succès.";
-            } else {
-                $errorMessage = "Erreur lors de la création : " . pg_last_error($conn);
             }
         }
     }
@@ -478,6 +460,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
             font-size: 16px;
             margin-bottom: 20px;
         }
+
+        .password-toggle {
+    position: relative;
+}
+
+.password-toggle input {
+    padding-right: 40px;
+}
+
+.password-toggle button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+}
     </style>
 </head>
 <body>
@@ -624,7 +626,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
                         <option value="A">Autre</option>
                     </select>
                 </div>
-                
+                <div class="form-group">
+            <label for="edit_pass">Nouveau mot de passe (laisser vide pour ne pas modifier):</label>
+            <input type="password" id="edit_pass" name="pass" placeholder="Laisser vide pour conserver l'ancien mot de passe">
+            </div>
                 <button type="submit" class="submit-btn">Mettre à jour</button>
             </form>
         </div>
@@ -694,7 +699,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
                         <option value="F">Féminin</option>
                         <option value="A">Autre</option>
                     </select>
-                </div>
+                    </div>
+
+                    <div class="form-group">
+                    <label for="add_pass">Mot de passe:</label>
+                    <input type="password" id="add_pass" name="pass" required placeholder="Mot de passe pour le nouvel utilisateur">
+                    </div>
                 
                 <button type="submit" class="submit-btn">Créer l'utilisateur</button>
             </form>
@@ -862,4 +872,44 @@ function resetPassword(userId) {
         form.submit();
     }
 }
+
+function togglePassword(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = 'Masquer';
+    } else {
+        input.type = 'password';
+        button.textContent = 'Afficher';
+    }
+}
+
+// Ajouter des boutons pour afficher/masquer les mots de passe si souhaité
+document.addEventListener('DOMContentLoaded', function() {
+    // Pour le formulaire d'ajout
+    const addPassField = document.getElementById('add_pass');
+    if (addPassField) {
+        addPassField.parentElement.classList.add('password-toggle');
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.textContent = 'Afficher';
+        toggleBtn.onclick = () => togglePassword('add_pass', toggleBtn.id);
+        toggleBtn.id = 'toggle_add_pass';
+        addPassField.parentElement.appendChild(toggleBtn);
+    }
+    
+    // Pour le formulaire de modification
+    const editPassField = document.getElementById('edit_pass');
+    if (editPassField) {
+        editPassField.parentElement.classList.add('password-toggle');
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.textContent = 'Afficher';
+        toggleBtn.onclick = () => togglePassword('edit_pass', toggleBtn.id);
+        toggleBtn.id = 'toggle_edit_pass';
+        editPassField.parentElement.appendChild(toggleBtn);
+    }
+});
 </script>
