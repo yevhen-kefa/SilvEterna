@@ -40,5 +40,5 @@ $stmt->execute([
     'message' => $message
 ]);
 
-header("Location: chat.php?friend_id=$friendId");
+header("Location: html/chat.php?friend_id=$friendId");
 exit;
