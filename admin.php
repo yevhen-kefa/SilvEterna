@@ -233,6 +233,34 @@ $resultUsers = pg_query($conn, $queryUsers);
 if ($resultUsers === false) {
     $errorMessage = "Erreur SQL : " . pg_last_error($conn);
 }
+
+function generateTemporaryPassword($length = 8) {
+    $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $password = '';
+    for ($i = 0; $i < $length; $i++) {
+        $password .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $password;
+}
+
+// Traitement de la réinitialisation de mot de passe
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
+    $userId = $_POST['user_id'];
+    
+    // Générer un nouveau mot de passe temporaire
+    $newPassword = generateTemporaryPassword();
+    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+    
+    // Mettre à jour le mot de passe dans la base de données
+    $updatePasswordQuery = "UPDATE users SET pass = $1 WHERE id = $2";
+    $updateResult = pg_query_params($conn, $updatePasswordQuery, array($hashedPassword, $userId));
+    
+    if ($updateResult) {
+        $successMessage = "Mot de passe réinitialisé avec succès. Nouveau mot de passe temporaire : <strong>" . $newPassword . "</strong><br>L'utilisateur devra le changer lors de sa prochaine connexion.";
+    } else {
+        $errorMessage = "Erreur lors de la réinitialisation du mot de passe : " . pg_last_error($conn);
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -518,10 +546,10 @@ if ($resultUsers === false) {
                                 <td><?php echo htmlspecialchars($user['statut']); ?></td>
                                 <td><?php echo htmlspecialchars($user['sexe']); ?></td>
                                 <td><?php echo htmlspecialchars($user['is_admin']); ?></td>
-
                                 <td>
-                                    <button class="action-btn edit-btn" onclick="editUser(<?php echo $user['id']; ?>)">Modifier</button>
-                                    <button class="action-btn delete-btn" onclick="confirmDelete(<?php echo $user['id']; ?>)">Supprimer</button>
+                                <button class="action-btn edit-btn" onclick="editUser(<?php echo $user['id']; ?>)">Modifier</button>
+                                <button class="action-btn" style="background-color: #ff9800;" onclick="resetPassword(<?php echo $user['id']; ?>)">Réinitialiser MDP</button>
+                                <button class="action-btn delete-btn" onclick="confirmDelete(<?php echo $user['id']; ?>)">Supprimer</button>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -811,4 +839,27 @@ document.getElementById('add_avatar').addEventListener('change', function(event)
         reader.readAsDataURL(file);
     }
 });
+
+function resetPassword(userId) {
+    if (confirm('Êtes-vous sûr de vouloir réinitialiser le mot de passe de cet utilisateur ?')) {
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.style.display = 'none';
+        
+        var userIdInput = document.createElement('input');
+        userIdInput.type = 'hidden';
+        userIdInput.name = 'user_id';
+        userIdInput.value = userId;
+        
+        var resetInput = document.createElement('input');
+        resetInput.type = 'hidden';
+        resetInput.name = 'reset_password';
+        resetInput.value = '1';
+        
+        form.appendChild(userIdInput);
+        form.appendChild(resetInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
 </script>
