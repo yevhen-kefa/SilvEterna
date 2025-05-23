@@ -484,7 +484,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['reset_password'])) {
 </head>
 <body>
    <aside class="sidebar">
-        <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 15%; width: auto;"></a>
+        <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 15%; width: auto;"></a>
         <nav>
             <ul>
                 <li><a href="html/rechercher.php">Rechercher</a></li>

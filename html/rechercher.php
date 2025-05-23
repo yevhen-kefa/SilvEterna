@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Vérification si l'utilisateur est connecté et est admin
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
 }
