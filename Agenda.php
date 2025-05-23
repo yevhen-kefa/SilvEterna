@@ -14,6 +14,7 @@ $config_file = 'silveterna_config.php';
 if (!file_exists($config_file)) {
     die("Error: Configuration file '$config_file' not found!");
 }
+$isAdmin = $_SESSION['is_admin'] ?? false;
 
 
 // Utilisation de la fonction connectDB() définie dans silveterna_config.php
@@ -358,15 +359,17 @@ $noms_mois = [
 </head>
 <body>
     <aside class="sidebar">
-    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 25%; width: auto;"></a>
-    <nav>
+        <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 15%; width: auto;"></a>
+        <nav>
             <ul>
+                <li><a href="html/rechercher.php">Rechercher</a></li>
                 <li><a href="Agenda.php">Calendrier</a></li>
                 <li><a href="html/jeux.php">Jeux</a></li>
                 <li><a href="html/option.php">Option</a></li>
                 <?php if ($isAdmin) : ?>
-                <li><a href="admin.php">Page admin</a></li>
-                <li><a href="admin_loisir.php">Page admin loisirs</a></li>
+                <li><a href="Agenda_globale.php">Calendrier_globale</a></li>
+                <li><a href="admin.php">Page admin utilisateur</a></li>
+                <li><a href="admin_loisir.php">Page admin loisir</a></li>
                 <?php endif; ?>
                 <li><a href="deconnexion.php">Deconnexion</a></li>
             </ul>

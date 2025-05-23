@@ -5,6 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $currentUserId = $_SESSION['user_id'];
 $friendId = $_GET['friend_id'] ?? null;
 if (!$friendId) {
@@ -38,6 +42,11 @@ $query = "SELECT prenom, nom FROM users WHERE id = :id";
 $stmt = $cnx->prepare($query);
 $stmt->execute(['id' => $friendId]);
 $friend = $stmt->fetch();
+$friend = $stmt->fetch();
+if (!$friend) {
+    die("Utilisateur introuvable.");
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

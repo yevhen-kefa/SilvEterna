@@ -15,6 +15,7 @@ $conn = connectDB();
 if (!$conn) {
     die("Erreur de connexion à la base de données");
 }
+$isAdmin = $_SESSION['is_admin'] ?? false;
 
 // Fonction pour formater les dates
 function formatDate($date) {
@@ -238,14 +239,18 @@ $eventsResult = pg_query($conn, $eventsQuery);
 </head>
 <body>
     <aside class="sidebar">
-    <a href="html/profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 15%; width: auto;"></a>
-    <nav>
+        <a href="profil.php"> <img class="logo" src="img/silverternalogo.png" style="height: 15%; width: auto;"></a>
+        <nav>
             <ul>
+                <li><a href="html/rechercher.php">Rechercher</a></li>
                 <li><a href="Agenda.php">Calendrier</a></li>
                 <li><a href="html/jeux.php">Jeux</a></li>
                 <li><a href="html/option.php">Option</a></li>
-                <li><a href="admin.php">Gestion des utilisateurs</a></li>
-                <li><a href="loisirs_admin.php">Gestion des événements</a></li>
+                <?php if ($isAdmin) : ?>
+                <li><a href="Agenda_globale.php">Calendrier_globale</a></li>
+                <li><a href="admin.php">Page admin utilisateur</a></li>
+                <li><a href="admin_loisir.php">Page admin loisir</a></li>
+                <?php endif; ?>
                 <li><a href="deconnexion.php">Deconnexion</a></li>
             </ul>
         </nav>

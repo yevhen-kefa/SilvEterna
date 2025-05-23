@@ -98,9 +98,10 @@ $isAdmin = $_SESSION['is_admin'] ?? false;
 <body>
     <div class="container">
        <aside class="sidebar">
-        <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 25%; width: auto;"></a>
+        <a href="profil.php"> <img class="logo" src="../img/silverternalogo.png" style="height: 15%; width: auto;"></a>
             <nav>
                 <ul>
+                    <li><a href="rechercher.php">Rechercher</a></li>
                     <li><a href="../Agenda.php">Calendrier</a></li>
                     <li><a href="jeux.php">Jeux</a></li>
                     <li><a href="option.php">Option</a></li>
