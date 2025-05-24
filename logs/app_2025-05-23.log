@@ -1,0 +1,15 @@
+[2025-05-23 18:59:08] [DEBUG] Tentative d'inclusion du fichier de connexion
+[2025-05-23 18:59:08] [DEBUG] Fichier de connexion inclus
+[2025-05-23 18:59:08] [DEBUG] Vérification de la fonction connectDB()
+[2025-05-23 18:59:08] [DEBUG] La fonction connectDB() existe
+[2025-05-23 18:59:08] [INFO] Connexion à la base de données réussie
+[2025-05-23 19:06:11] [DEBUG] Tentative d'inclusion du fichier de connexion
+[2025-05-23 19:06:11] [DEBUG] Fichier de connexion inclus
+[2025-05-23 19:06:11] [DEBUG] Vérification de la fonction connectDB()
+[2025-05-23 19:06:11] [DEBUG] La fonction connectDB() existe
+[2025-05-23 19:06:11] [INFO] Connexion à la base de données réussie
+[2025-05-23 19:06:31] [DEBUG] Tentative d'inclusion du fichier de connexion
+[2025-05-23 19:06:31] [DEBUG] Fichier de connexion inclus
+[2025-05-23 19:06:31] [DEBUG] Vérification de la fonction connectDB()
+[2025-05-23 19:06:31] [DEBUG] La fonction connectDB() existe
+[2025-05-23 19:06:31] [INFO] Connexion à la base de données réussie
