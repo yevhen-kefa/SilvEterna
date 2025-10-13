@@ -584,8 +584,7 @@ COPY public.statut (id_statut, activite) FROM stdin;
 
 COPY public.users (id, avatar, nom, prenom, login, email, pass, datenaissance, telephone, statut, sexe, date_create, is_admin) FROM stdin;
 6	avatar_682a01a1117c3.jpeg	kasane	Teto	tetoUTAU	contact@teto.xyz	$2y$10$7WhV4.QMusKFgQwyq65ohOtSinj4lBgH9ds35Z61D61tgU9Fiilcu	2111-02-11	545454654534	actif	A	2025-05-18 17:49:53.026396	f
-7	avatar_682a029fd10a4.jpg	Chartier 	Pierre	x2007	HeadofTrading@Volet.Hybrides	$2y$10$IAXBUhxODJMxvz1nW18MSOVEYPFA7VFhFNSjfc9B61DEO0vL/cgQS	2001-09-11	2007	actif	M	2025-05-18 17:53:29.01731	f
-8	avatar_682a0ab830ba5.jpeg	Nigga	Goku	nigga	contact@nigga.xyz	$2y$10$RlWxkK84.eSS8WIOXJrTfun8A.QURG8H8nYTDUGqhUtfotZOtAMlG	2006-02-11	0755555555	actif	M	2025-05-18 18:28:40.194375	f
+7	avatar_682a029fd10a4.jpg	Chartier 	Pierre	x2007	HeadofTrading@Volet.Hybrides	$2y$10$IAXBUhxODJMxvz1nW18MSOVEYPFA7VFhFNSjfc9B61DEO0vL/cgQS	2001-09-11	2007	actif	M	2025-05-18 17:53:29.01731	
 5	avatar_682a016f51829.jpg	Tayoken	Garde	tayoken	contact@tayoken.xyz	$2y$10$DaJK9sXHP3./Snb29XDpH.dqFIu.Yjmsnam017LvHUn0BhzpqCg6i	2006-11-02	07 66 36 26 67	actif	M	2025-05-12 15:51:25.056695	t
 \.
 
